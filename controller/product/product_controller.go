@@ -33,6 +33,7 @@ func (ctrl *ProductController) CreateProductController(c *gin.Context) {
 
 	file, err := c.FormFile("image")
 	if err != nil {
+		ctrl.Log.Debug("handler: Failed to get uploaded file", zap.Error(err))
 		ctrl.Log.Error("handler: Failed to get uploaded file", zap.Error(err))
 		helper.ResponseError(c, "image is required", err.Error(), http.StatusBadRequest)
 		return
@@ -40,6 +41,7 @@ func (ctrl *ProductController) CreateProductController(c *gin.Context) {
 
 	filePath := "/tmp/" + file.Filename
 	if err := c.SaveUploadedFile(file, filePath); err != nil {
+		ctrl.Log.Debug("handler: Failed to save uploaded file", zap.Error(err))
 		ctrl.Log.Error("handler: Failed to save uploaded file", zap.Error(err))
 		helper.ResponseError(c, "Failed to save file", err.Error(), http.StatusInternalServerError)
 		return
@@ -48,6 +50,7 @@ func (ctrl *ProductController) CreateProductController(c *gin.Context) {
 
 	product, err := ctrl.Service.Product.CreateProduct(&input, filePath)
 	if err != nil {
+		ctrl.Log.Debug("handler: Failed to create product", zap.Error(err))
 		ctrl.Log.Error("handler: Failed to create product", zap.Error(err))
 		helper.ResponseError(c, "Failed to create product", err.Error(), http.StatusBadRequest)
 		return
@@ -67,12 +70,13 @@ func (ctrl *ProductController) GetAllProductsController(c *gin.Context) {
 	products, totalItems, err := ctrl.Service.Product.GetAllProducts(pageInt, pageSizeInt)
 	if err != nil {
 		if err.Error() == "Product not found" {
-			ctrl.Log.Warn("No products found", zap.Int("page", pageInt), zap.Int("pageSize", pageSizeInt))
+			ctrl.Log.Warn("handler: No products found", zap.Int("page", pageInt), zap.Int("pageSize", pageSizeInt))
 			helper.ResponseError(c, "No products found", err.Error(), http.StatusNotFound)
 			return
 		}
 
-		ctrl.Log.Error("Failed to fetch products", zap.Error(err))
+		ctrl.Log.Debug("handler: Failed to fetch products", zap.Error(err))
+		ctrl.Log.Error("handler: Failed to fetch products", zap.Error(err))
 		helper.ResponseError(c, "Failed to fetch products", err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -87,6 +91,7 @@ func (ctrl *ProductController) GetProductByIDController(c *gin.Context) {
 
 	product, err := ctrl.Service.Product.GetProductByID(productID)
 	if err != nil {
+		ctrl.Log.Warn("handler: No products found", zap.Int("id", productID))
 		helper.ResponseError(c, "No products found", err.Error(), http.StatusNotFound)
 		return
 	}
@@ -95,4 +100,21 @@ func (ctrl *ProductController) GetProductByIDController(c *gin.Context) {
 
 }
 func (ctrl *ProductController) UpdateProductController(c *gin.Context) {}
-func (ctrl *ProductController) DeleteProductController(c *gin.Context) {}
+func (ctrl *ProductController) DeleteProductController(c *gin.Context) {
+	id := helper.StringToInt(c.Param("id"))
+
+	err := ctrl.Service.Product.DeleteProduct(id)
+	if err != nil {
+		if err.Error() == "product not found" {
+			ctrl.Log.Warn("handler: No products found", zap.Int("id", id))
+			helper.ResponseError(c, "No products found", err.Error(), http.StatusNotFound)
+		} else {
+			ctrl.Log.Debug("handler: Failed to delete product", zap.Int("id", id), zap.Error(err))
+			ctrl.Log.Error("handler: Failed to delete product", zap.Int("id", id), zap.Error(err))
+			helper.ResponseError(c, "Failed to delete product", err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+	helper.ResponseOK(c, nil, "Product deleted successfully", http.StatusOK)
+
+}

@@ -54,7 +54,24 @@ func (p *productRepository) Create(productInput *models.Product) error {
 
 // Delete implements ProductRepository.
 func (p *productRepository) Delete(id int) error {
-	panic("unimplemented")
+	var product models.Product
+
+	err := p.DB.First(&product, id).Error
+	if err != nil {
+		if err.Error() == "record not found" {
+			return fmt.Errorf("product not found")
+		}
+		p.Log.Error("Failed to fetch product for deletion", zap.Error(err))
+		return err
+	}
+
+	err = p.DB.Delete(&product).Error
+	if err != nil {
+		p.Log.Error("Failed to delete product", zap.Error(err))
+		return err
+	}
+
+	return nil
 }
 
 // GetAll implements ProductRepository.
@@ -100,7 +117,7 @@ func (p *productRepository) GetAll(page, pageSize int) ([]*models.ProductWithCat
 func (p *productRepository) GetByID(id int) (*models.ProductID, error) {
 	var productID models.ProductID
 	var variantJSON []byte
-	
+
 	err := p.DB.Table("products").
 		Select(`
 			products.id, 

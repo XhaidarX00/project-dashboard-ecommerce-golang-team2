@@ -45,7 +45,11 @@ func (p *productService) CreateProduct(product *models.Product, filePath string)
 
 // DeleteProduct implements ProductService.
 func (p *productService) DeleteProduct(id int) error {
-	panic("unimplemented")
+	err := p.Repo.Product.Delete(id)
+	if err != nil {
+		return errors.New("failed to delete product")
+	}
+	return nil
 }
 
 // GetAllProducts implements ProductService.

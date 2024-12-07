@@ -24,7 +24,6 @@ type Product struct {
 	Published   bool            `json:"published" gorm:"type:boolean;default:false" example:"true"`
 	CreatedAt   time.Time       `json:"created_at" gorm:"autoCreateTime" swaggerignore:"true"`
 	UpdatedAt   time.Time       `json:"updated_at" gorm:"autoUpdateTime" swaggerignore:"true"`
-	DeletedAt   *gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty" swaggerignore:"true"`
 }
 type ProductWithCategory struct {
 	ID           int         `json:"id"`
