@@ -58,11 +58,7 @@ func InitDB(config config.Configuration) (*gorm.DB, error) {
 
 	// running seeder
 	log.Println("Starting seeding...")
-	err = SeedAll(db)
-	if err != nil {
-		return nil, fmt.Errorf("ERROR: failed Seed All, message: %s", err.Error())
-	}
-	log.Println("Seeding completed successfully.")
+	SeedAll(db)
 
 	return db, nil
 }

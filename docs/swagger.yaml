@@ -1,0 +1,25 @@
+basePath: /
+host: localhost:8080
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+    url: http://example.com/support
+  description: API for managing Ecommerce
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://example.com/terms/
+  title: Dashboard Ecommerce Team 2
+  version: "1.0"
+paths: {}
+securityDefinitions:
+  Authentication:
+    in: header
+    name: Authorization
+    type: apiKey
+  UserID:
+    in: header
+    name: User-ID
+    type: apiKey
+swagger: "2.0"
