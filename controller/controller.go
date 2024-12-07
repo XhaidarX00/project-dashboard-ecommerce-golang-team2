@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"dashboard-ecommerce-team2/config"
 	bannercontroller "dashboard-ecommerce-team2/controller/banner"
 	categorycontroller "dashboard-ecommerce-team2/controller/category"
 	dashboardcontroller "dashboard-ecommerce-team2/controller/dashboard"
@@ -26,7 +27,7 @@ type Controller struct {
 	User      usercontroller.UserController
 }
 
-func NewController(service service.Service, logger *zap.Logger, cacher database.Cacher) *Controller {
+func NewController(service service.Service, logger *zap.Logger, cacher database.Cacher, config config.Configuration) *Controller {
 	return &Controller{
 		Banner:    *bannercontroller.NewBannerController(service, logger),
 		Category:  *categorycontroller.NewCategoryController(service, logger),
@@ -35,6 +36,6 @@ func NewController(service service.Service, logger *zap.Logger, cacher database.
 		Product:   *productcontroller.NewProductController(service, logger),
 		Promotion: *promotioncontroller.NewPromotionController(service, logger),
 		Stock:     *stockcontroller.NewStockController(service, logger),
-		User:      *usercontroller.NewUserController(service, logger, cacher),
+		User:      *usercontroller.NewUserController(service, logger, cacher, config),
 	}
 }

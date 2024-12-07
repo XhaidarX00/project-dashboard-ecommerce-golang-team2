@@ -2,6 +2,7 @@ package utils
 
 type LoginResponse struct {
 	ID    string `json:"id"`
+	Role  string `json:"role"`
 	Token string `json:"token"`
 }
 

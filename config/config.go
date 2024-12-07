@@ -11,6 +11,7 @@ type Configuration struct {
 	AppName     string
 	Debug       bool
 	Port        string
+	SecretKey   string
 	DBConfig    DBConfig
 	RedisConfig RedisConfig
 }
@@ -39,9 +40,10 @@ func ReadConfig() (Configuration, error) {
 		return Configuration{}, err
 	}
 	return Configuration{
-		AppName: os.Getenv("APP_NAME"),
-		Debug:   helper.StringToBool(os.Getenv("DEBUG")),
-		Port:    os.Getenv("PORT"),
+		AppName:   os.Getenv("APP_NAME"),
+		Debug:     helper.StringToBool(os.Getenv("DEBUG")),
+		Port:      os.Getenv("PORT"),
+		SecretKey: os.Getenv("SECRET_KEY"),
 		DBConfig: DBConfig{
 			DBName:         os.Getenv("DB_NAME"),
 			DBUsername:     os.Getenv("DB_USERNAME"),

@@ -1,8 +1,8 @@
 package helper
 
 import (
-	"crypto/rand"
-	"encoding/hex"
+	// "crypto/rand"
+	// "encoding/hex"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -17,11 +17,11 @@ func HashPassword(password string) string {
 	return string(bytes)
 }
 
-func GenerateToken() string {
-	token := make([]byte, 32)
-	_, err := rand.Read(token)
-	if err != nil {
-		panic("failed to generate token")
-	}
-	return hex.EncodeToString(token)
-}
+// func GenerateToken() string {
+// 	token := make([]byte, 32)
+// 	_, err := rand.Read(token)
+// 	if err != nil {
+// 		panic("failed to generate token")
+// 	}
+// 	return hex.EncodeToString(token)
+// }

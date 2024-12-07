@@ -10,7 +10,7 @@ import (
 type UserRepository interface {
 	Create(userInput models.User) error
 	GetByEmail(email string) (*models.User, error)
-	UpdatePassword(id, newPassword string) error
+	UpdatePassword(resetPasswordInput models.LoginRequest) error
 	CountCustomer() (int, error)
 }
 
@@ -21,23 +21,33 @@ type userRepository struct {
 
 // Create implements UserRepository.
 func (u *userRepository) Create(userInput models.User) error {
-	panic("unimplemented")
+	return u.DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(&userInput).Error; err != nil {
+			u.Log.Error("Failed to create user", zap.Error(err))
+			return err
+		}
+		return nil
+	})
 }
 
 // GetByEmail implements UserRepository.
 func (u *userRepository) GetByEmail(email string) (*models.User, error) {
-	panic("unimplemented")
+	var user models.User
+	err := u.DB.Where("email = ?", email).First(&user).Error
+	return &user, err
 }
 
 // UpdatePassword implements UserRepository.
-func (u *userRepository) UpdatePassword(id, newPassword string) error {
-	panic("unimplemented")
+func (u *userRepository) UpdatePassword(resetPasswordInput models.LoginRequest) error {
+	return u.DB.Model(&models.User{}).Where("email =?", resetPasswordInput.Email).Update("password", resetPasswordInput.Password).Error
 }
 
 // CountCustomer implements UserRepository.
 
 func (u *userRepository) CountCustomer() (int, error) {
-	panic("unimplemented")
+	var count int64
+	err := u.DB.Model(&models.User{}).Where("role =?", "customer").Count(&count).Error
+	return int(count), err
 }
 
 func NewUserRepository(db *gorm.DB, log *zap.Logger) UserRepository {

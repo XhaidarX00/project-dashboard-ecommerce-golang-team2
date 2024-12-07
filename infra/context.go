@@ -57,7 +57,7 @@ func NewServiceContext() (*ServiceContext, error) {
 	service := service.NewService(repository, log)
 
 	// instance controller
-	Ctl := controller.NewController(service, log, rdb)
+	Ctl := controller.NewController(service, log, rdb, config)
 
 	return &ServiceContext{Cfg: config, DB: db, Ctl: *Ctl, Log: log, Cacher: rdb, Middleware: middleware}, nil
 }
