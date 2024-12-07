@@ -1,6 +1,8 @@
 package helper
 
 import (
+	"dashboard-ecommerce-team2/models"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,4 +24,9 @@ func ResponseError(c *gin.Context, errorMsg string, message string, httpStatusCo
 		ErrorMsg: errorMsg,
 		Message:  message,
 	})
+}
+
+type OrderDetailResponse struct {
+	Order *models.Order      `json:"order"`
+	Items []models.OrderItem `json:"items"`
 }
