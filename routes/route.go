@@ -16,18 +16,18 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 
 	authRoutes(r, ctx)
 
-	router := r.Group("/products")
+	productRoutes := r.Group("/products")
 	{
-		router.POST("/", ctx.Ctl.Product.CreateProductController)
+		productRoutes.POST("/", ctx.Ctl.Product.CreateProductController)
 	}
 
-	router := r.Group("/orders")
+	orderRoutes := r.Group("/orders")
 	{
-		router.GET("/", ctx.Ctl.Order.GetAllOrdersController)
-		router.GET("/:id", ctx.Ctl.Order.GetOrderByIDController)
-		router.PUT("/update/:id", ctx.Ctl.Order.UpdateOrderStatusController)
-		router.DELETE("/:id", ctx.Ctl.Order.DeleteOrderController)
-		router.GET("/detail/:id", ctx.Ctl.Order.GetOrderDetailController)
+		orderRoutes.GET("/", ctx.Ctl.Order.GetAllOrdersController)
+		orderRoutes.GET("/:id", ctx.Ctl.Order.GetOrderByIDController)
+		orderRoutes.PUT("/update/:id", ctx.Ctl.Order.UpdateOrderStatusController)
+		orderRoutes.DELETE("/:id", ctx.Ctl.Order.DeleteOrderController)
+		orderRoutes.GET("/detail/:id", ctx.Ctl.Order.GetOrderDetailController)
 	}
 
 	return r
