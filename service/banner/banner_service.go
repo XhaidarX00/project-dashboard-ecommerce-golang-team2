@@ -8,7 +8,7 @@ import (
 )
 
 type BannerService interface {
-	CreateBanner(bannerInput models.Banner) error
+	CreateBanner(bannerInput *models.Banner) error
 	UpdateBanner(bannerInput models.Banner) error
 	GetBannerByID(id int) (*models.Banner, error)
 	DeleteBanner(id int) error
@@ -20,8 +20,8 @@ type bannerService struct {
 }
 
 // CreateBanner implements BannerService.
-func (b *bannerService) CreateBanner(bannerInput models.Banner) error {
-	panic("unimplemented")
+func (b *bannerService) CreateBanner(bannerInput *models.Banner) error {
+	return b.Repo.Banner.Create(bannerInput)
 }
 
 // DeleteBanner implements BannerService.

@@ -22,13 +22,13 @@ func Migrate(db *gorm.DB) error {
 		name  string
 		model interface{}
 	}{
-		{"user", models.User{}},
-		{"category", models.Category{}},
-		{"product", models.Product{}},
+		// {"user", models.User{}},
+		// {"category", models.Category{}},
+		// {"product", models.Product{}},
 		{"banner", models.Banner{}},
-		{"order", models.Order{}},
-		{"order_item", models.OrderItem{}},
-		{"promotion", models.Promotion{}},
+		// {"order", models.Order{}},
+		// {"order_item", models.OrderItem{}},
+		// {"promotion", models.Promotion{}},
 	}
 
 	for _, migration := range allModel {

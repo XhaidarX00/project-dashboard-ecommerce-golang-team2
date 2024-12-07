@@ -2,13 +2,14 @@ package bannerrepository
 
 import (
 	"dashboard-ecommerce-team2/models"
+	"log"
 
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
 type BannerRepository interface {
-	Create(bannerInput models.Banner) error
+	Create(bannerInput *models.Banner) error
 	Update(bannerInput models.Banner) error
 	Delete(id int) error
 	GetByID(id int) (*models.Banner, error)
@@ -20,8 +21,15 @@ type bannerRepository struct {
 }
 
 // Create implements BannerRepository.
-func (b *bannerRepository) Create(bannerInput models.Banner) error {
-	panic("unimplemented")
+func (b *bannerRepository) Create(bannerInput *models.Banner) error {
+	log.Printf("%v\n", bannerInput)
+	err := b.DB.Create(bannerInput).Error
+	if err != nil {
+		b.Log.Error("Error from repo creating banner:", zap.Error(err))
+		return err
+	}
+
+	return nil
 }
 
 // Delete implements BannerRepository.
