@@ -2,13 +2,14 @@ package productrepository
 
 import (
 	"dashboard-ecommerce-team2/models"
+	// "encoding/json"
 
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
 type ProductRepository interface {
-	Create(productInput models.Product) error
+	Create(productInput *models.Product) error
 	Update(productInput models.Product) error
 	Delete(id int) error
 	GetByID(id int) (*models.Product, error)
@@ -22,6 +23,10 @@ type productRepository struct {
 	Log *zap.Logger
 }
 
+func NewProductRepository(db *gorm.DB, log *zap.Logger) ProductRepository {
+	return &productRepository{DB: db, Log: log}
+}
+
 // CountEachProduct implements ProductRepository.
 func (p *productRepository) CountEachProduct() (int, error) {
 	panic("unimplemented")
@@ -33,8 +38,15 @@ func (p *productRepository) CountProduct() (int, error) {
 }
 
 // Create implements ProductRepository.
-func (p *productRepository) Create(productInput models.Product) error {
-	panic("unimplemented")
+func (p *productRepository) Create(productInput *models.Product) error {
+	
+	p.Log.Info("Creating product", zap.Any("input", productInput))
+	err := p.DB.Create(productInput).Error
+	if err != nil {
+		p.Log.Error("repository: Error creating product", zap.Error(err))
+		return err
+	}
+	return nil
 }
 
 // Delete implements ProductRepository.
@@ -57,6 +69,4 @@ func (p *productRepository) Update(productInput models.Product) error {
 	panic("unimplemented")
 }
 
-func NewProductRepository(db *gorm.DB, log *zap.Logger) ProductRepository {
-	return &productRepository{DB: db, Log: log}
-}
+
