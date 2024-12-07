@@ -30,6 +30,17 @@ func NewUserController(service service.Service, log *zap.Logger, cacher database
 	}
 }
 
+// CreateUserController godoc
+// @Summary      Create a new user
+// @Description  Register a new user with a provided request body
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        registerRequest  body     models.RegisterRequest  true  "User Registration Request Body"
+// @Success      201             {object} helper.HTTPResponse   "User created successfully"
+// @Failure      400             {object} helper.HTTPResponse   "Invalid request body"
+// @Failure      500             {object} helper.HTTPResponse   "Failed to create user"
+// @Router       /auth/register [post]
 func (ctrl *UserController) CreateUserController(c *gin.Context) {
 	var registerReq models.RegisterRequest
 	if err := c.ShouldBindJSON(&registerReq); err != nil {
@@ -85,6 +96,17 @@ func (ctrl *UserController) LoginController(c *gin.Context) {
 	helper.ResponseOK(c, loginResponse, "User logged in successfully", http.StatusOK)
 }
 
+// CheckEmailUserController godoc
+// @Summary      Check if email is already registered
+// @Description  Verify if a user with the given email already exists in the system
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        email  body     struct{ Email string }  true  "Email to check"
+// @Success      200    {object} helper.HTTPResponse     "Email check result"
+// @Failure      400    {object} helper.HTTPResponse     "Invalid request body"
+// @Failure      500    {object} helper.HTTPResponse     "Failed to check user email"
+// @Router       /auth/check-email [get]
 func (ctrl *UserController) CheckEmailUserController(c *gin.Context) {
 	request := struct {
 		Email string `json:"email"`
@@ -103,6 +125,18 @@ func (ctrl *UserController) CheckEmailUserController(c *gin.Context) {
 	}
 	helper.ResponseOK(c, existedUser, "User email exists", http.StatusOK)
 }
+
+// ResetUserPasswordController godoc
+// @Summary      Reset user password
+// @Description  Reset the password for a user using a provided request body
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        resetRequest  body     models.LoginRequest  true  "User password reset request body"
+// @Success      200           {object} helper.HTTPResponse   "User password reset successfully"
+// @Failure      400           {object} helper.HTTPResponse   "Invalid request body"
+// @Failure      500           {object} helper.HTTPResponse   "Failed to reset user password"
+// @Router       /auth/reset-password [PATCH]
 func (ctrl *UserController) ResetUserPasswordController(c *gin.Context) {
 	var resetReq models.LoginRequest
 	if err := c.ShouldBindJSON(&resetReq); err != nil {
