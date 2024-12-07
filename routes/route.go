@@ -12,6 +12,6 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 	r := gin.Default()
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
+	r.POST("/api/create-banner", ctx.Ctl.Banner.CreateBannerController)
 	return r
 }
