@@ -22,6 +22,11 @@ type OrderItem struct {
 	Total     float64 `json:"total" gorm:"type:decimal(10,2);not null" binding:"required"`
 }
 
+type OrderDetailResponse struct {
+	Order *Order      `json:"order"`
+	Items []OrderItem `json:"items"`
+}
+
 func OrderSeed() []Order {
 	return []Order{
 		{

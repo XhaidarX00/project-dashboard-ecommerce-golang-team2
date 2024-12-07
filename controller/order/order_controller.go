@@ -2,6 +2,7 @@ package ordercontroller
 
 import (
 	"dashboard-ecommerce-team2/helper"
+	"dashboard-ecommerce-team2/models"
 	"dashboard-ecommerce-team2/service"
 	"net/http"
 	"strconv"
@@ -191,5 +192,5 @@ func (ctrl *OrderController) GetOrderDetailController(c *gin.Context) {
 		return
 	}
 
-	helper.ResponseOK(c, helper.OrderDetailResponse{Order: order, Items: orderItems}, "Fetched order details successfully", http.StatusOK)
+	helper.ResponseOK(c, models.OrderDetailResponse{Order: order, Items: orderItems}, "Fetched order details successfully", http.StatusOK)
 }
