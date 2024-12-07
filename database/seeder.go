@@ -2,7 +2,7 @@ package database
 
 import (
 	"dashboard-ecommerce-team2/models"
-	"fmt"
+	"log"
 	"reflect"
 
 	"gorm.io/gorm"
@@ -17,9 +17,12 @@ func SeedAll(db *gorm.DB) error {
 			if nil != err {
 				name := reflect.TypeOf(seeds[i]).String()
 				errorMessage := err.Error()
-				return fmt.Errorf("%s seeder fail with %s", name, errorMessage)
+				log.Printf("%s seeder fail with %s", name, errorMessage)
+				continue
 			}
+
 		}
+		log.Println("Seeding completed successfully.")
 		return nil
 	})
 }
