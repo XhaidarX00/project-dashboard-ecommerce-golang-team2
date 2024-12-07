@@ -26,8 +26,30 @@ type Product struct {
 	UpdatedAt   time.Time       `json:"updated_at" gorm:"autoUpdateTime" swaggerignore:"true"`
 	DeletedAt   *gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty" swaggerignore:"true"`
 }
+type ProductWithCategory struct {
+	ID           int         `json:"id"`
+	CategoryName string      `json:"category_name"`
+	Name         string      `json:"name"`
+	CodeProduct  string      `json:"code_product"`
+	Images       StringArray `json:"images"`
+	Description  string      `json:"description"`
+	Stock        int         `json:"stock"`
+	Price        float64     `json:"price"`
+	Published    bool        `json:"published"`
+}
+type ProductID struct {
+	ID           int             `json:"id"`
+	CategoryName string          `json:"category_name"`
+	Variant      json.RawMessage `json:"variant"`
+	Name         string          `json:"name"`
+	CodeProduct  string          `json:"code_product"`
+	Images       StringArray     `json:"images"`
+	Description  string          `json:"description"`
+	Stock        int             `json:"stock"`
+	Price        float64         `json:"price"`
+	Published    bool            `json:"published"`
+}
 
-// type ImageJSON []string
 type StringArray []string
 
 func (s *StringArray) Scan(value interface{}) error {

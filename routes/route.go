@@ -18,6 +18,7 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 	{
 		router.POST("/", ctx.Ctl.Product.CreateProductController)
 		router.GET("/", ctx.Ctl.Product.GetAllProductsController)
+		router.GET("/:id", ctx.Ctl.Product.GetProductByIDController)
 	}
 
 	return r

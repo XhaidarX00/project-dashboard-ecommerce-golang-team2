@@ -66,6 +66,12 @@ func (ctrl *ProductController) GetAllProductsController(c *gin.Context) {
 
 	products, totalItems, err := ctrl.Service.Product.GetAllProducts(pageInt, pageSizeInt)
 	if err != nil {
+		if err.Error() == "Product not found" {
+			ctrl.Log.Warn("No products found", zap.Int("page", pageInt), zap.Int("pageSize", pageSizeInt))
+			helper.ResponseError(c, "No products found", err.Error(), http.StatusNotFound)
+			return
+		}
+
 		ctrl.Log.Error("Failed to fetch products", zap.Error(err))
 		helper.ResponseError(c, "Failed to fetch products", err.Error(), http.StatusInternalServerError)
 		return
@@ -74,6 +80,19 @@ func (ctrl *ProductController) GetAllProductsController(c *gin.Context) {
 
 	helper.ResponseOKPagination(c, products, "", pageInt, pageSizeInt, totalItems, totalPages, http.StatusOK)
 }
-func (ctrl *ProductController) GetProductByIDController(c *gin.Context) {}
-func (ctrl *ProductController) UpdateProductController(c *gin.Context)  {}
-func (ctrl *ProductController) DeleteProductController(c *gin.Context)  {}
+func (ctrl *ProductController) GetProductByIDController(c *gin.Context) {
+	id := c.Param("id")
+
+	productID := helper.StringToInt(id)
+
+	product, err := ctrl.Service.Product.GetProductByID(productID)
+	if err != nil {
+		helper.ResponseError(c, "No products found", err.Error(), http.StatusNotFound)
+		return
+	}
+
+	helper.ResponseOK(c, product, "", http.StatusOK)
+
+}
+func (ctrl *ProductController) UpdateProductController(c *gin.Context) {}
+func (ctrl *ProductController) DeleteProductController(c *gin.Context) {}
