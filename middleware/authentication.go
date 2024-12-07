@@ -53,13 +53,6 @@ func (m *Middleware) Authentication() gin.HandlerFunc {
 			return
 		}
 
-		role := c.GetHeader("User-Role")
-		if role == "" {
-			helper.ResponseError(c, "Roles are required", "Unauthorized", http.StatusUnauthorized)
-			c.Abort()
-			return
-		}
-
 		c.Next()
 	}
 }
