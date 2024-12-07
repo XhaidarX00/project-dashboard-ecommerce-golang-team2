@@ -48,17 +48,19 @@ func InitDB(config config.Configuration) (*gorm.DB, error) {
 	sqlDB.SetMaxIdleConns(config.DBConfig.DBMaxIdleConns)
 	sqlDB.SetMaxOpenConns(config.DBConfig.DBMaxOpenConns)
 
-	// Migration tabel form struct
-	log.Println("Starting migration...")
-	err = Migrate(db)
-	if err != nil {
-		return nil, fmt.Errorf("ERROR: failed migrateAllTable, message: %s", err.Error())
-	}
-	log.Println("Migration completed successfully.")
+	if !config.MigrateUsed {
+		// Migration tabel form struct
+		log.Println("Starting migration...")
+		err = Migrate(db)
+		if err != nil {
+			return nil, fmt.Errorf("ERROR: failed migrateAllTable, message: %s", err.Error())
+		}
+		log.Println("Migration completed successfully.")
 
-	// running seeder
-	log.Println("Starting seeding...")
-	SeedAll(db)
+		// running seeder
+		log.Println("Starting seeding...")
+		SeedAll(db)
+	}
 
 	return db, nil
 }

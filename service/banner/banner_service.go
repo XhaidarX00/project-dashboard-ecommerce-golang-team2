@@ -26,17 +26,17 @@ func (b *bannerService) CreateBanner(bannerInput *models.Banner) error {
 
 // DeleteBanner implements BannerService.
 func (b *bannerService) DeleteBanner(id int) error {
-	panic("unimplemented")
+	return b.Repo.Banner.Delete(id)
 }
 
 // GetBannerByID implements BannerService.
 func (b *bannerService) GetBannerByID(id int) (*models.Banner, error) {
-	panic("unimplemented")
+	return b.Repo.Banner.GetByID(id)
 }
 
 // UpdateBanner implements BannerService.
 func (b *bannerService) UpdateBanner(bannerInput models.Banner) error {
-	panic("unimplemented")
+	return b.Repo.Banner.Update(bannerInput)
 }
 
 func NewBannerService(repo repository.Repository, log *zap.Logger) BannerService {
