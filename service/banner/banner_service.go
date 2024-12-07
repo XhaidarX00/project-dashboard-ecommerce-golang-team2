@@ -8,7 +8,7 @@ import (
 )
 
 type BannerService interface {
-	CreateBanner(bannerInput models.Banner) error
+	CreateBanner(bannerInput *models.Banner) error
 	UpdateBanner(bannerInput models.Banner) error
 	GetBannerByID(id int) (*models.Banner, error)
 	DeleteBanner(id int) error
@@ -20,23 +20,23 @@ type bannerService struct {
 }
 
 // CreateBanner implements BannerService.
-func (b *bannerService) CreateBanner(bannerInput models.Banner) error {
-	panic("unimplemented")
+func (b *bannerService) CreateBanner(bannerInput *models.Banner) error {
+	return b.Repo.Banner.Create(bannerInput)
 }
 
 // DeleteBanner implements BannerService.
 func (b *bannerService) DeleteBanner(id int) error {
-	panic("unimplemented")
+	return b.Repo.Banner.Delete(id)
 }
 
 // GetBannerByID implements BannerService.
 func (b *bannerService) GetBannerByID(id int) (*models.Banner, error) {
-	panic("unimplemented")
+	return b.Repo.Banner.GetByID(id)
 }
 
 // UpdateBanner implements BannerService.
 func (b *bannerService) UpdateBanner(bannerInput models.Banner) error {
-	panic("unimplemented")
+	return b.Repo.Banner.Update(bannerInput)
 }
 
 func NewBannerService(repo repository.Repository, log *zap.Logger) BannerService {

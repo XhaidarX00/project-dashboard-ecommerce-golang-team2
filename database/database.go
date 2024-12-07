@@ -54,18 +54,26 @@ func InitDB(config config.Configuration) (*gorm.DB, error) {
 	}
 	log.Println("INFO: Database connected successfully!")
 
-
-	// Migration tabel form struct
-	log.Println("Starting migration...")
-	err = Migrate(db)
+	err = sqlDB.Ping()
 	if err != nil {
-		return nil, fmt.Errorf("ERROR: failed migrateAllTable, message: %s", err.Error())
+		log.Printf("ERROR: Database connection failed: %v\n", err)
+		return nil, fmt.Errorf("ERROR: unable to connect to the database: %v", err)
 	}
-	log.Println("Migration completed successfully.")
+	log.Println("INFO: Database connected successfully!")
 
-	// running seeder
-	log.Println("Starting seeding...")
-	SeedAll(db)
+	if !config.MigrateUsed {
+		// Migration tabel form struct
+		log.Println("Starting migration...")
+		err = Migrate(db)
+		if err != nil {
+			return nil, fmt.Errorf("ERROR: failed migrateAllTable, message: %s", err.Error())
+		}
+		log.Println("Migration completed successfully.")
+
+		// running seeder
+		log.Println("Starting seeding...")
+		SeedAll(db)
+	}
 
 	return db, nil
 }

@@ -30,6 +30,29 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 		orderRoutes.GET("/detail/:id", ctx.Ctl.Order.GetOrderDetailController)
 	}
 
+	authRoutes(r, ctx)
+
+	productRoutes := r.Group("/products")
+	{
+		productRoutes.POST("/", ctx.Ctl.Product.CreateProductController)
+	}
+
+	orderRoutes := r.Group("/orders")
+	{
+		orderRoutes.GET("/", ctx.Ctl.Order.GetAllOrdersController)
+		orderRoutes.GET("/:id", ctx.Ctl.Order.GetOrderByIDController)
+		orderRoutes.PUT("/update/:id", ctx.Ctl.Order.UpdateOrderStatusController)
+		orderRoutes.DELETE("/:id", ctx.Ctl.Order.DeleteOrderController)
+		orderRoutes.GET("/detail/:id", ctx.Ctl.Order.GetOrderDetailController)
+	}
+
+	banner := r.Group("/api")
+	{
+		banner.GET("/banner", ctx.Ctl.Banner.GetBannerByIDController)
+		banner.DELETE("/banner", ctx.Ctl.Banner.DeleteBannerController)
+		banner.PUT("/banner", ctx.Ctl.Banner.UpdateBannerController)
+		banner.POST("/create-banner", ctx.Ctl.Banner.CreateBannerController)
+	}
 	return r
 }
 
