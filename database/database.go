@@ -35,7 +35,6 @@ func InitDB(config config.Configuration) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	// Convert to *sql.DB for setting connection options
 	sqlDB, err := db.DB()
 	if err != nil {
@@ -47,6 +46,14 @@ func InitDB(config config.Configuration) (*gorm.DB, error) {
 	sqlDB.SetConnMaxLifetime(time.Duration(config.DBConfig.DBMaxLifeTime) * time.Hour)
 	sqlDB.SetMaxIdleConns(config.DBConfig.DBMaxIdleConns)
 	sqlDB.SetMaxOpenConns(config.DBConfig.DBMaxOpenConns)
+
+	err = sqlDB.Ping()
+	if err != nil {
+		log.Printf("ERROR: Database connection failed: %v\n", err)
+		return nil, fmt.Errorf("ERROR: unable to connect to the database: %v", err)
+	}
+	log.Println("INFO: Database connected successfully!")
+
 
 	// Migration tabel form struct
 	log.Println("Starting migration...")

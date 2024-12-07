@@ -3,12 +3,14 @@ package productservice
 import (
 	"dashboard-ecommerce-team2/models"
 	"dashboard-ecommerce-team2/repository"
+	utils "dashboard-ecommerce-team2/util"
+	"os"
 
 	"go.uber.org/zap"
 )
 
 type ProductService interface {
-	CreateProduct(productInput models.Product) error
+	CreateProduct(product *models.Product, filePath string) (*models.Product, error)
 	GetAllProducts() ([]models.Product, error)
 	GetProductByID(id int) (*models.Product, error)
 	UpdateProduct(productInput models.Product) error
@@ -21,8 +23,23 @@ type productService struct {
 }
 
 // CreateProduct implements ProductService.
-func (p *productService) CreateProduct(productInput models.Product) error {
-	panic("unimplemented")
+func (p *productService) CreateProduct(product *models.Product, filePath string) (*models.Product, error) {
+	cdnURL, err := utils.UploadToCDN(filePath)
+	if err != nil {
+		p.Log.Error("service: upload failed", zap.Error(err))
+		return product, err
+	}
+
+	product.Images = []string{cdnURL}
+
+	if err := p.Repo.Product.Create(product); err != nil {
+		p.Log.Error("service: create failed", zap.Error(err))
+		return product, err
+	}
+
+	os.Remove(filePath)
+
+	return product, nil
 }
 
 // DeleteProduct implements ProductService.
