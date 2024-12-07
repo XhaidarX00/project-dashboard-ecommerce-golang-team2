@@ -12,9 +12,13 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 	r := gin.Default()
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	r.GET("/api/banner", ctx.Ctl.Banner.GetBannerByIDController)
-	r.DELETE("/api/banner", ctx.Ctl.Banner.DeleteBannerController)
-	r.PUT("/api/banner", ctx.Ctl.Banner.UpdateBannerController)
-	r.POST("/api/create-banner", ctx.Ctl.Banner.CreateBannerController)
+
+	banner := r.Group("/api")
+	{
+		banner.GET("/banner", ctx.Ctl.Banner.GetBannerByIDController)
+		banner.DELETE("/banner", ctx.Ctl.Banner.DeleteBannerController)
+		banner.PUT("/banner", ctx.Ctl.Banner.UpdateBannerController)
+		banner.POST("/create-banner", ctx.Ctl.Banner.CreateBannerController)
+	}
 	return r
 }
