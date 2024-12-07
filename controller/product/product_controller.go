@@ -57,7 +57,23 @@ func (ctrl *ProductController) CreateProductController(c *gin.Context) {
 	helper.ResponseOK(c, product, "create successfully", http.StatusCreated)
 
 }
-func (ctrl *ProductController) GetAllProductsController(c *gin.Context) {}
+func (ctrl *ProductController) GetAllProductsController(c *gin.Context) {
+	page := c.DefaultQuery("page", "1")
+	pageSize := c.DefaultQuery("pageSize", "10")
+
+	pageInt := helper.StringToInt(page)
+	pageSizeInt := helper.StringToInt(pageSize)
+
+	products, totalItems, err := ctrl.Service.Product.GetAllProducts(pageInt, pageSizeInt)
+	if err != nil {
+		ctrl.Log.Error("Failed to fetch products", zap.Error(err))
+		helper.ResponseError(c, "Failed to fetch products", err.Error(), http.StatusInternalServerError)
+		return
+	}
+	totalPages := (totalItems + pageSizeInt - 1) / pageSizeInt
+
+	helper.ResponseOKPagination(c, products, "", pageInt, pageSizeInt, totalItems, totalPages, http.StatusOK)
+}
 func (ctrl *ProductController) GetProductByIDController(c *gin.Context) {}
 func (ctrl *ProductController) UpdateProductController(c *gin.Context)  {}
 func (ctrl *ProductController) DeleteProductController(c *gin.Context)  {}
