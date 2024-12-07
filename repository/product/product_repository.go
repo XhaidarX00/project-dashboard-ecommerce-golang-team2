@@ -13,7 +13,7 @@ type ProductRepository interface {
 	Update(productInput models.Product) error
 	Delete(id int) error
 	GetByID(id int) (*models.Product, error)
-	GetAll() ([]models.Product, error)
+	GetAll(page, pageSize int) ([]*models.Product, int64, error)
 	CountProduct() (int, error)
 	CountEachProduct() (int, error)
 }
@@ -55,8 +55,27 @@ func (p *productRepository) Delete(id int) error {
 }
 
 // GetAll implements ProductRepository.
-func (p *productRepository) GetAll() ([]models.Product, error) {
-	panic("unimplemented")
+func (p *productRepository) GetAll(page, pageSize int) ([]*models.Product, int64, error) {
+	var products []*models.Product
+	var totalItems int64
+
+	offset := (page - 1) * pageSize
+
+	// Menghitung total items
+	err := p.DB.Model(&models.Product{}).Count(&totalItems).Error
+	if err != nil {
+		p.Log.Error("Failed to count total products", zap.Error(err))
+		return nil, 0, err
+	}
+
+	// Mengambil produk dengan pagination
+	err = p.DB.Offset(offset).Limit(pageSize).Find(&products).Error
+	if err != nil {
+		p.Log.Error("Failed to fetch products", zap.Error(err))
+		return nil, 0, err
+	}
+
+	return products, totalItems, nil
 }
 
 // GetByID implements ProductRepository.

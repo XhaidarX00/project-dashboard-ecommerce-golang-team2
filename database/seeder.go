@@ -28,13 +28,13 @@ func SeedAll(db *gorm.DB) error {
 
 func dataSeeds() []interface{} {
 	return []interface{}{
-		models.UserSeed(),
-		models.CategorySeed(),
+		// models.UserSeed(),
+		// models.CategorySeed(),
 		models.ProductSeed(),
-		models.StockHistorySeed(),
-		models.BannerSeed(),
-		models.OrderSeed(),
-		models.OrderItemSeed(),
-		models.PromotionSeed(),
+		// models.StockHistorySeed(),
+		// models.BannerSeed(),
+		// models.OrderSeed(),
+		// models.OrderItemSeed(),
+		// models.PromotionSeed(),
 	}
 }

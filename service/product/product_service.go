@@ -11,7 +11,7 @@ import (
 
 type ProductService interface {
 	CreateProduct(product *models.Product, filePath string) (*models.Product, error)
-	GetAllProducts() ([]models.Product, error)
+	GetAllProducts(page, pageSize int) ([]*models.Product, int, error)
 	GetProductByID(id int) (*models.Product, error)
 	UpdateProduct(productInput models.Product) error
 	DeleteProduct(id int) error
@@ -48,8 +48,14 @@ func (p *productService) DeleteProduct(id int) error {
 }
 
 // GetAllProducts implements ProductService.
-func (p *productService) GetAllProducts() ([]models.Product, error) {
-	panic("unimplemented")
+func (p *productService) GetAllProducts(page, pageSize int) ([]*models.Product, int, error) {
+	products, totalItems, err := p.Repo.Product.GetAll(page, pageSize)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// Convert totalItems from int64 to int before returning
+	return products, int(totalItems), nil
 }
 
 // GetProductByID implements ProductService.
