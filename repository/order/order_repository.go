@@ -14,6 +14,8 @@ type OrderRepository interface {
 	CountOrder() (int, error)
 	CountTotalPriceOrder() (int, error)
 	GetEarningEachMonth() (int, error)
+	GetDetail(id int) (*models.Order, []models.OrderItem, error)
+	DeleteOrder(id int) error
 }
 
 type orderRepository struct {
@@ -38,17 +40,63 @@ func (o *orderRepository) CountOrder() (int, error) {
 
 // GetAll implements OrderRepository.
 func (o *orderRepository) GetAll() ([]models.Order, error) {
-	panic("unimplemented")
+	var orders []models.Order
+	if err := o.DB.Find(&orders).Error; err != nil {
+		o.Log.Error("Failed to retrieve orders", zap.Error(err))
+		return nil, err
+	}
+	return orders, nil
 }
 
 // GetByID implements OrderRepository.
 func (o *orderRepository) GetByID(id int) (*models.Order, error) {
-	panic("unimplemented")
+	order := models.Order{}
+	if err := o.DB.First(&order, id).Error; err != nil {
+		o.Log.Error("Failed to find order", zap.Error(err))
+		return nil, err
+	}
+	return &order, nil
 }
 
 // UpdateStatus implements OrderRepository.
 func (o *orderRepository) UpdateStatus(id int, status string) error {
-	panic("unimplemented")
+	order := models.Order{}
+	if err := o.DB.First(&order, id).Error; err != nil {
+		o.Log.Error("Failed to find order", zap.Error(err))
+		return err
+	}
+	order.Status = status
+	return o.DB.Save(&order).Error
+}
+
+func (o *orderRepository) DeleteOrder(id int) error {
+	var orderItems []models.OrderItem
+	if err := o.DB.Where("order_id = ?", id).Delete(&orderItems).Error; err != nil {
+		o.Log.Error("Failed to delete order items", zap.Error(err))
+		return err
+	}
+
+	if err := o.DB.Delete(&models.Order{}, id).Error; err != nil {
+		o.Log.Error("Failed to delete order", zap.Error(err))
+		return err
+	}
+	return nil
+}
+
+func (o *orderRepository) GetDetail(id int) (*models.Order, []models.OrderItem, error) {
+	var order models.Order
+	if err := o.DB.First(&order, id).Error; err != nil {
+		o.Log.Error("Failed to find order", zap.Error(err))
+		return nil, nil, err
+	}
+
+	var orderItems []models.OrderItem
+	if err := o.DB.Where("order_id = ?", id).Find(&orderItems).Error; err != nil {
+		o.Log.Error("Failed to retrieve order items", zap.Error(err))
+		return nil, nil, err
+	}
+
+	return &order, orderItems, nil
 }
 
 func NewOrderRepository(db *gorm.DB, log *zap.Logger) OrderRepository {
