@@ -62,8 +62,9 @@ type StockHistory struct {
 }
 
 type BestProduct struct {
-	Name  string `json:"name"`
-	Total string `json:"total"`
+	ProductID int    `json:"product_id"`
+	Name      string `json:"name"`
+	Total     int    `json:"total"`
 }
 
 func ProductSeed() []Product {

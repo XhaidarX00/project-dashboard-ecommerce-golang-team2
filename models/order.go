@@ -30,34 +30,112 @@ type OrderDetailResponse struct {
 func OrderSeed() []Order {
 	return []Order{
 		{
-			ID:              1,
 			UserID:          1,
 			TotalAmount:     150.75,
 			PaymentMethod:   "credit_card",
 			ShippingAddress: "123 Main St",
 			Status:          "pending",
-			CreatedAt:       time.Now(),
-			UpdatedAt:       time.Now(),
+			CreatedAt:       time.Date(2024, time.January, 15, 12, 0, 0, 0, time.UTC),
+			UpdatedAt:       time.Date(2024, time.January, 15, 12, 0, 0, 0, time.UTC),
 		},
 		{
-			ID:              2,
 			UserID:          2,
 			TotalAmount:     300.00,
 			PaymentMethod:   "paypal",
 			ShippingAddress: "456 Elm St",
 			Status:          "shipped",
-			CreatedAt:       time.Now(),
-			UpdatedAt:       time.Now(),
+			CreatedAt:       time.Date(2024, time.February, 15, 12, 0, 0, 0, time.UTC),
+			UpdatedAt:       time.Date(2024, time.February, 16, 12, 0, 0, 0, time.UTC),
 		},
 		{
-			ID:              3,
 			UserID:          3,
 			TotalAmount:     500.50,
 			PaymentMethod:   "debit_card",
 			ShippingAddress: "789 Oak St",
 			Status:          "completed",
-			CreatedAt:       time.Now(),
-			UpdatedAt:       time.Now(),
+			CreatedAt:       time.Date(2024, time.March, 15, 12, 0, 0, 0, time.UTC),
+			UpdatedAt:       time.Date(2024, time.March, 16, 12, 0, 0, 0, time.UTC),
+		},
+		{
+			UserID:          4,
+			TotalAmount:     175.25,
+			PaymentMethod:   "debit_card",
+			ShippingAddress: "123 Pine St",
+			Status:          "canceled",
+			CreatedAt:       time.Date(2024, time.April, 15, 12, 0, 0, 0, time.UTC),
+			UpdatedAt:       time.Date(2024, time.April, 15, 12, 0, 0, 0, time.UTC),
+		},
+		{
+			UserID:          5,
+			TotalAmount:     250.00,
+			PaymentMethod:   "bank_transfer",
+			ShippingAddress: "321 Birch St",
+			Status:          "pending",
+			CreatedAt:       time.Date(2024, time.May, 15, 12, 0, 0, 0, time.UTC),
+			UpdatedAt:       time.Date(2024, time.May, 15, 12, 0, 0, 0, time.UTC),
+		},
+		{
+			UserID:          6,
+			TotalAmount:     100.75,
+			PaymentMethod:   "cash",
+			ShippingAddress: "654 Maple St",
+			Status:          "shipped",
+			CreatedAt:       time.Date(2024, time.June, 15, 12, 0, 0, 0, time.UTC),
+			UpdatedAt:       time.Date(2024, time.June, 16, 12, 0, 0, 0, time.UTC),
+		},
+		{
+			UserID:          7,
+			TotalAmount:     400.50,
+			PaymentMethod:   "credit_card",
+			ShippingAddress: "987 Cedar St",
+			Status:          "completed",
+			CreatedAt:       time.Date(2024, time.July, 15, 12, 0, 0, 0, time.UTC),
+			UpdatedAt:       time.Date(2024, time.July, 16, 12, 0, 0, 0, time.UTC),
+		},
+		{
+			UserID:          8,
+			TotalAmount:     300.25,
+			PaymentMethod:   "debit_card",
+			ShippingAddress: "213 Ash St",
+			Status:          "canceled",
+			CreatedAt:       time.Date(2024, time.August, 15, 12, 0, 0, 0, time.UTC),
+			UpdatedAt:       time.Date(2024, time.August, 15, 12, 0, 0, 0, time.UTC),
+		},
+		{
+			UserID:          9,
+			TotalAmount:     275.00,
+			PaymentMethod:   "paypal",
+			ShippingAddress: "546 Spruce St",
+			Status:          "pending",
+			CreatedAt:       time.Date(2024, time.September, 15, 12, 0, 0, 0, time.UTC),
+			UpdatedAt:       time.Date(2024, time.September, 15, 12, 0, 0, 0, time.UTC),
+		},
+		{
+			UserID:          10,
+			TotalAmount:     125.50,
+			PaymentMethod:   "cash",
+			ShippingAddress: "879 Willow St",
+			Status:          "shipped",
+			CreatedAt:       time.Date(2024, time.October, 15, 12, 0, 0, 0, time.UTC),
+			UpdatedAt:       time.Date(2024, time.October, 16, 12, 0, 0, 0, time.UTC),
+		},
+		{
+			UserID:          11,
+			TotalAmount:     500.00,
+			PaymentMethod:   "bank_transfer",
+			ShippingAddress: "210 Poplar St",
+			Status:          "completed",
+			CreatedAt:       time.Date(2024, time.November, 15, 12, 0, 0, 0, time.UTC),
+			UpdatedAt:       time.Date(2024, time.November, 16, 12, 0, 0, 0, time.UTC),
+		},
+		{
+			UserID:          12,
+			TotalAmount:     350.00,
+			PaymentMethod:   "credit_card",
+			ShippingAddress: "432 Sycamore St",
+			Status:          "pending",
+			CreatedAt:       time.Date(2024, time.December, 15, 12, 0, 0, 0, time.UTC),
+			UpdatedAt:       time.Date(2024, time.December, 15, 12, 0, 0, 0, time.UTC),
 		},
 	}
 }
@@ -65,28 +143,88 @@ func OrderSeed() []Order {
 func OrderItemSeed() []OrderItem {
 	return []OrderItem{
 		{
-			ID:        1,
 			OrderID:   1,
-			ProductID: 101,
+			ProductID: 1, // Smartphone
 			Quantity:  2,
-			Price:     75.00,
-			Total:     150.00,
+			Price:     699.99,
+			Total:     1399.98,
 		},
 		{
-			ID:        2,
 			OrderID:   2,
-			ProductID: 102,
+			ProductID: 2, // Laptop
 			Quantity:  3,
-			Price:     100.00,
-			Total:     300.00,
+			Price:     1299.99,
+			Total:     3899.97,
 		},
 		{
-			ID:        3,
 			OrderID:   3,
-			ProductID: 103,
+			ProductID: 3, // Smartwatch
 			Quantity:  5,
-			Price:     100.10,
-			Total:     500.50,
+			Price:     199.99,
+			Total:     999.95,
+		},
+		{
+			OrderID:   4,
+			ProductID: 4, // Headphones
+			Quantity:  1,
+			Price:     89.99,
+			Total:     89.99,
+		},
+		{
+			OrderID:   5,
+			ProductID: 1, // Smartphone
+			Quantity:  3,
+			Price:     699.99,
+			Total:     2099.97,
+		},
+		{
+			OrderID:   6,
+			ProductID: 2, // Laptop
+			Quantity:  2,
+			Price:     1299.99,
+			Total:     2599.98,
+		},
+		{
+			OrderID:   7,
+			ProductID: 3, // Smartwatch
+			Quantity:  4,
+			Price:     199.99,
+			Total:     799.96,
+		},
+		{
+			OrderID:   8,
+			ProductID: 4, // Headphones
+			Quantity:  3,
+			Price:     89.99,
+			Total:     269.97,
+		},
+		{
+			OrderID:   9,
+			ProductID: 1, // Smartphone
+			Quantity:  1,
+			Price:     699.99,
+			Total:     699.99,
+		},
+		{
+			OrderID:   10,
+			ProductID: 2, // Laptop
+			Quantity:  1,
+			Price:     1299.99,
+			Total:     1299.99,
+		},
+		{
+			OrderID:   11,
+			ProductID: 3, // Smartwatch
+			Quantity:  3,
+			Price:     199.99,
+			Total:     599.97,
+		},
+		{
+			OrderID:   12,
+			ProductID: 4, // Headphones
+			Quantity:  2,
+			Price:     89.99,
+			Total:     179.98,
 		},
 	}
 }

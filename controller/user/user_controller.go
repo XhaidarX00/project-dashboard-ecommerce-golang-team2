@@ -87,7 +87,7 @@ func (ctrl *UserController) LoginController(c *gin.Context) {
 	key := fmt.Sprintf("UserID-%s", userIDStr)
 	token := helper.GenerateToken(userIDStr, ctrl.Config.SecretKey)
 	loginResponse := utils.LoginResponse{
-		ID:    userIDStr,
+		ID:    key,
 		Role:  user.Role,
 		Token: token,
 	}

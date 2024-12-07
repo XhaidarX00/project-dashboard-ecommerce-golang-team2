@@ -62,6 +62,7 @@ func (c *Cacher) Set(name string, value string) error {
 }
 
 func (c *Cacher) SaveToken(name string, value string) error {
+	log.Printf("Saving token for %s:%s", name, value)
 	return c.rdb.Set(context.Background(), c.prefix+"_"+name, value, 20*time.Hour).Err()
 }
 

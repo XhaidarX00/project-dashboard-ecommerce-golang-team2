@@ -15,6 +15,7 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	authRoutes(r, ctx)
+	dashboardRoutes(r, ctx)
 
 	productRoutes := r.Group("/products")
 	{
@@ -47,4 +48,15 @@ func authRoutes(r *gin.Engine, ctx infra.ServiceContext) {
 	authGroup.GET("/check-email", ctx.Ctl.User.CheckEmailUserController)
 	authGroup.POST("/register", ctx.Ctl.User.CreateUserController)
 	authGroup.PATCH("/reset-password", ctx.Ctl.User.ResetUserPasswordController)
+}
+
+func dashboardRoutes(r *gin.Engine, ctx infra.ServiceContext) {
+	dashboardGroup := r.Group("/dashboard")
+	dashboardGroup.Use(ctx.Middleware.Authentication())
+	{
+		dashboardGroup.GET("/summary", ctx.Ctl.Dashboard.GetSummaryController)
+		dashboardGroup.GET("/current-month-earning", ctx.Ctl.Dashboard.CurrentMonthEarningController)
+		dashboardGroup.GET("/revenue-chart", ctx.Ctl.Dashboard.RenevueChartController)
+		dashboardGroup.GET("/best-item-list", ctx.Ctl.Dashboard.GetBestProductListController)
+	}
 }

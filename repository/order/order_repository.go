@@ -2,6 +2,8 @@ package orderrepository
 
 import (
 	"dashboard-ecommerce-team2/models"
+	"math"
+	"time"
 
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -12,8 +14,8 @@ type OrderRepository interface {
 	GetByID(id int) (*models.Order, error)
 	GetAll() ([]models.Order, error)
 	CountOrder() (int, error)
-	CountTotalPriceOrder() (int, error)
-	GetEarningEachMonth() (int, error)
+	CountTotalPriceOrder() (float64, error)
+	GetEarningEachMonth() ([]models.Revenue, error)
 	GetDetail(id int) (*models.Order, []models.OrderItem, error)
 	DeleteOrder(id int) error
 }
@@ -24,18 +26,49 @@ type orderRepository struct {
 }
 
 // GetEarningEachMonth implements OrderRepository.
-func (o *orderRepository) GetEarningEachMonth() (int, error) {
-	panic("unimplemented")
+func (o *orderRepository) GetEarningEachMonth() ([]models.Revenue, error) {
+	var revenues []models.Revenue
+	currentYear := time.Now().Year()
+
+	// Perform the query to calculate total earnings for each month of the current year
+	err := o.DB.Table("(VALUES (1), (2), (3), (4), (5), (6), (7), (8), (9), (10), (11), (12)) AS months(month)").
+		Select("TO_CHAR(DATE_TRUNC('month', TO_DATE(CAST(month AS TEXT), 'MM')), 'Month') AS month, COALESCE(SUM(total_amount), 0) AS total_earning").
+		Joins("LEFT JOIN orders ON EXTRACT(MONTH FROM orders.created_at) = months.month AND EXTRACT(YEAR FROM orders.created_at) = ?", currentYear).
+		Group("months.month").
+		Order("months.month ASC").
+		Scan(&revenues).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, revenue := range revenues {
+		totalEarning := revenue.TotalEarning * ((100 - 10) / 100)
+		revenue.TotalEarning = math.Round(totalEarning*100) / 100
+	}
+
+	return revenues, nil
 }
 
 // CountTotalPriceOrder implements OrderRepository.
-func (o *orderRepository) CountTotalPriceOrder() (int, error) {
-	panic("unimplemented")
+func (o *orderRepository) CountTotalPriceOrder() (float64, error) {
+	var totalPrice float64
+	err := o.DB.Table("orders").Select("SUM(total_amount)").Scan(&totalPrice).Error
+	if err != nil {
+		return 0, err
+	}
+	newTotal := math.Round(totalPrice*100) / 100
+	return newTotal, nil
 }
 
 // CountOrder implements OrderRepository.
 func (o *orderRepository) CountOrder() (int, error) {
-	panic("unimplemented")
+	var count int64
+	err := o.DB.Model(&models.Order{}).Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+	return int(count), nil
 }
 
 // GetAll implements OrderRepository.

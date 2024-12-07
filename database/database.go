@@ -54,13 +54,6 @@ func InitDB(config config.Configuration) (*gorm.DB, error) {
 	}
 	log.Println("INFO: Database connected successfully!")
 
-	err = sqlDB.Ping()
-	if err != nil {
-		log.Printf("ERROR: Database connection failed: %v\n", err)
-		return nil, fmt.Errorf("ERROR: unable to connect to the database: %v", err)
-	}
-	log.Println("INFO: Database connected successfully!")
-
 	if !config.MigrateUsed {
 		// Migration tabel form struct
 		log.Println("Starting migration...")

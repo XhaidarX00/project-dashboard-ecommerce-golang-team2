@@ -15,7 +15,7 @@ type ProductRepository interface {
 	GetByID(id int) (*models.Product, error)
 	GetAll(page, pageSize int) ([]*models.Product, int64, error)
 	CountProduct() (int, error)
-	CountEachProduct() (int, error)
+	CountEachProduct() ([]models.BestProduct, error)
 }
 
 type productRepository struct {
@@ -28,18 +28,54 @@ func NewProductRepository(db *gorm.DB, log *zap.Logger) ProductRepository {
 }
 
 // CountEachProduct implements ProductRepository.
-func (p *productRepository) CountEachProduct() (int, error) {
-	panic("unimplemented")
+func (p *productRepository) CountEachProduct() ([]models.BestProduct, error) {
+	type ProductCount struct {
+		ProductID uint   `gorm:"column:product_id"`
+		Name      string `gorm:"column:name"`
+		Total     int    `gorm:"column:total"`
+	}
+
+	var productCounts []ProductCount
+	var bestProducts []models.BestProduct
+
+	// Perform the query to count products grouped by product ID
+	err := p.DB.Table("order_items").
+		Select("order_items.product_id, products.name, COUNT(order_items.product_id) AS total").
+		Joins("JOIN orders ON orders.id = order_items.order_id").
+		Joins("JOIN products ON products.id = order_items.product_id").
+		Group("order_items.product_id, products.name").
+		Order("total DESC").
+		Scan(&productCounts).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Map the query results to the []models.BestProduct slice
+	for _, pc := range productCounts {
+		bestProducts = append(bestProducts, models.BestProduct{
+			ProductID: int(pc.ProductID),
+			Name:      pc.Name,
+			Total:     pc.Total,
+		})
+	}
+
+	return bestProducts, nil
 }
 
 // CountProduct implements ProductRepository.
 func (p *productRepository) CountProduct() (int, error) {
-	panic("unimplemented")
+	var count int64
+	err := p.DB.Model(&models.Product{}).Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+	return int(count), nil
 }
 
 // Create implements ProductRepository.
 func (p *productRepository) Create(productInput *models.Product) error {
-	
+
 	p.Log.Info("Creating product", zap.Any("input", productInput))
 	err := p.DB.Create(productInput).Error
 	if err != nil {
@@ -87,5 +123,3 @@ func (p *productRepository) GetByID(id int) (*models.Product, error) {
 func (p *productRepository) Update(productInput models.Product) error {
 	panic("unimplemented")
 }
-
-
