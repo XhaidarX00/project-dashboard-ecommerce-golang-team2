@@ -74,8 +74,6 @@ func main() {
 	select {
 	case <-shutdownCtx.Done():
 		log.Println("Timeout of 5 seconds.")
-	default:
-		log.Println("Server gracefully stopped.")
 	}
 
 	log.Println("Server exiting")

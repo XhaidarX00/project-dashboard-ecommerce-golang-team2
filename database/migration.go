@@ -1,6 +1,7 @@
 package database
 
 import (
+	"dashboard-ecommerce-team2/models"
 	"fmt"
 	"log"
 
@@ -17,17 +18,20 @@ func Migrate(db *gorm.DB) error {
 	}
 
 	// Define migrations
-	models := []struct {
+	allModel := []struct {
 		name  string
 		model interface{}
 	}{
-		/*
-			TODO:
-			- Add models to be migrations
-		*/
+		{"user", models.User{}},
+		{"category", models.Category{}},
+		{"product", models.Product{}},
+		{"banner", models.Banner{}},
+		{"order", models.Order{}},
+		{"order_item", models.OrderItem{}},
+		{"promotion", models.Promotion{}},
 	}
 
-	for _, migration := range models {
+	for _, migration := range allModel {
 		var count int64
 		err := db.Raw("SELECT COUNT(1) FROM migrations WHERE name = ?", migration.name).Scan(&count).Error
 		if err != nil {
