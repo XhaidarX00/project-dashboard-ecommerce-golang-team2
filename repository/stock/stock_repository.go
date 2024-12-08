@@ -22,7 +22,23 @@ type stockRepository struct {
 
 // Delete implements StockRepository.
 func (s *stockRepository) Delete(id int) error {
-	panic("unimplemented")
+	var stockHistory models.StockHistory
+
+	err := s.DB.First(&stockHistory, id).Error
+	if err != nil {
+		if err.Error() == "record not found" {
+			return fmt.Errorf("history not found")
+		}
+		s.Log.Error("Failed to fetch history for deletion", zap.Error(err))
+		return err
+	}
+
+	err = s.DB.Delete(&stockHistory).Error
+	if err != nil {
+		s.Log.Error("Failed to delete history", zap.Error(err))
+		return err
+	}
+	return nil
 }
 
 // GetByID implements StockRepository.

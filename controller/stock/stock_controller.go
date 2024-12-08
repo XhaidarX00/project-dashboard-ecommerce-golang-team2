@@ -33,4 +33,20 @@ func (ctrl *StockController) GetProductStockDetailController(c *gin.Context) {
 
 	helper.ResponseOK(c, stockHistory, "", http.StatusOK)
 }
-func (ctrl *StockController) DeleteProductStockController(c *gin.Context) {}
+func (ctrl *StockController) DeleteProductStockController(c *gin.Context) {
+	id := helper.StringToInt(c.Param("id"))
+
+	err := ctrl.Service.Stock.DeleteProductStock(id)
+	if err != nil {
+		if err.Error() == "history not found" {
+			ctrl.Log.Warn("handler: No history found", zap.Int("id", id))
+			helper.ResponseError(c, "No history found", err.Error(), http.StatusNotFound)
+		} else {
+			ctrl.Log.Debug("handler: Failed to delete history", zap.Int("id", id), zap.Error(err))
+			ctrl.Log.Error("handler: Failed to delete history", zap.Int("id", id), zap.Error(err))
+			helper.ResponseError(c, "Failed", err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+	helper.ResponseOK(c, nil, "history deleted successfully", http.StatusOK)
+}

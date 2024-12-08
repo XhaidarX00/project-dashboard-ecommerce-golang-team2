@@ -3,6 +3,7 @@ package stockservice
 import (
 	"dashboard-ecommerce-team2/models"
 	"dashboard-ecommerce-team2/repository"
+	"errors"
 	"fmt"
 
 	"go.uber.org/zap"
@@ -21,7 +22,11 @@ type stockService struct {
 
 // DeleteProductStock implements StockService.
 func (s *stockService) DeleteProductStock(id int) error {
-	panic("unimplemented")
+	err := s.Repo.Stock.Delete(id)
+	if err != nil {
+		return errors.New("failed to delete product")
+	}
+	return nil
 }
 
 // GetProductStockDetail implements StockService.
