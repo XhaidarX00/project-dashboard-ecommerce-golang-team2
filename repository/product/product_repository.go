@@ -2,6 +2,8 @@ package productrepository
 
 import (
 	"dashboard-ecommerce-team2/models"
+	"time"
+
 	// "encoding/json"
 
 	"go.uber.org/zap"
@@ -40,8 +42,8 @@ func (p *productRepository) CountEachProduct() ([]models.BestProduct, error) {
 
 	// Perform the query to count products grouped by product ID
 	err := p.DB.Table("order_items").
-		Select("order_items.product_id, products.name, COUNT(order_items.product_id) AS total").
-		Joins("JOIN orders ON orders.id = order_items.order_id").
+		Select("order_items.product_id, products.name, COALESCE(COUNT(order_items.product_id), 0) AS total").
+		Joins("JOIN orders ON orders.id = order_items.order_id AND orders.status = ?", "completed").
 		Joins("JOIN products ON products.id = order_items.product_id").
 		Group("order_items.product_id, products.name").
 		Order("total DESC").
@@ -66,10 +68,18 @@ func (p *productRepository) CountEachProduct() ([]models.BestProduct, error) {
 // CountProduct implements ProductRepository.
 func (p *productRepository) CountProduct() (int, error) {
 	var count int64
-	err := p.DB.Model(&models.Product{}).Count(&count).Error
+
+	// Query to count distinct products in completed orders
+	err := p.DB.Table("order_items").
+		Joins("JOIN orders ON orders.id = order_items.order_id AND orders.status = ?", "completed").
+		Where("EXTRACT(MONTH FROM orders.created_at) = ? AND EXTRACT(YEAR FROM orders.created_at) = ?", time.Now().Month(), time.Now().Year()).
+		Select("COALESCE(SUM(order_items.quantity),0)").
+		Scan(&count).Error
+
 	if err != nil {
 		return 0, err
 	}
+
 	return int(count), nil
 }
 

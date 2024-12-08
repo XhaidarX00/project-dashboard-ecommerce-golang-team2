@@ -133,7 +133,7 @@ func OrderSeed() []Order {
 			TotalAmount:     350.00,
 			PaymentMethod:   "credit_card",
 			ShippingAddress: "432 Sycamore St",
-			Status:          "pending",
+			Status:          "completed",
 			CreatedAt:       time.Date(2024, time.December, 15, 12, 0, 0, 0, time.UTC),
 			UpdatedAt:       time.Date(2024, time.December, 15, 12, 0, 0, 0, time.UTC),
 		},

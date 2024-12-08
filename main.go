@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	_ "dashboard-ecommerce-team2/docs"
 	"dashboard-ecommerce-team2/infra"
 	"dashboard-ecommerce-team2/routes"
 	"log"

@@ -17,7 +17,613 @@
     },
     "host": "localhost:8080",
     "basePath": "/",
-    "paths": {},
+    "paths": {
+        "/api/v1/orders": {
+            "get": {
+                "description": "Get a list of all orders",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Get all orders",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Order"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/orders/{id}": {
+            "get": {
+                "description": "Get a single order by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Get order by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Order"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the status of an order by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Update order status",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "example": "\"shipped\"",
+                        "description": "Order Status",
+                        "name": "status",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated the order status",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid order ID",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update order status",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete an order by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Delete order by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted the order",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid order ID",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to delete the order",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/orders/{id}/details": {
+            "get": {
+                "description": "Get the details of an order by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Get order detail by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.OrderDetailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid order ID",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to fetch order details",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/check-email": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Email check result",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to check user email",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "get": {
+                "description": "Authenticate a user and return a JWT token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "User Login",
+                "parameters": [
+                    {
+                        "description": "Login Request Body",
+                        "name": "loginRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User logged in successfully",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Failed to login user",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Register a new user with a provided request body",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Create a new user",
+                "parameters": [
+                    {
+                        "description": "User Registration Request Body",
+                        "name": "registerRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "User created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to create user",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/reset-password": {
+            "patch": {
+                "description": "Reset the password for a user using a provided request body",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Reset user password",
+                "parameters": [
+                    {
+                        "description": "User password reset request body",
+                        "name": "resetRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User password reset successfully",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to reset user password",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/best-item-list": {
+            "get": {
+                "description": "Retrieve a list of the best-selling products",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Get best product list",
+                "responses": {
+                    "200": {
+                        "description": "best product list successfully retrieved",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error getting best product list",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/current-month-earning": {
+            "get": {
+                "description": "Retrieve the earnings for the current month",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Get current month earnings",
+                "responses": {
+                    "200": {
+                        "description": "current month earnings successfully retrieved",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error getting earnings",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/revenue-chart": {
+            "get": {
+                "description": "Generate a revenue chart for the dashboard",
+                "produces": [
+                    "text/html"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Get revenue chart",
+                "responses": {
+                    "200": {
+                        "description": "HTML revenue chart",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Error generating revenue chart",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/summary": {
+            "get": {
+                "description": "Retrieve a summary of the dashboard",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Get dashboard summary",
+                "responses": {
+                    "200": {
+                        "description": "dashboard summary successfully retrieved",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error getting summary",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "helper.HTTPResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "error_msg": {
+                    "type": "string"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total_items": {
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.LoginRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "johndoe@example.com"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 8,
+                    "example": "password123"
+                }
+            }
+        },
+        "models.Order": {
+            "type": "object",
+            "required": [
+                "payment_method",
+                "status",
+                "total_amount",
+                "user_id"
+            ],
+            "properties": {
+                "payment_method": {
+                    "type": "string",
+                    "example": "credit_card"
+                },
+                "shipping_address": {
+                    "type": "string",
+                    "example": "123 Main St"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "pending"
+                },
+                "total_amount": {
+                    "type": "number",
+                    "example": 150.75
+                },
+                "user_id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "models.OrderDetailResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.OrderItem"
+                    }
+                },
+                "order": {
+                    "$ref": "#/definitions/models.Order"
+                }
+            }
+        },
+        "models.OrderItem": {
+            "type": "object",
+            "required": [
+                "order_id",
+                "price",
+                "product_id",
+                "quantity",
+                "total"
+            ],
+            "properties": {
+                "order_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "price": {
+                    "type": "number",
+                    "example": 75
+                },
+                "product_id": {
+                    "type": "integer",
+                    "example": 101
+                },
+                "quantity": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "total": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.RegisterRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "name",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "johndoe@example.com"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 8,
+                    "example": "password123"
+                }
+            }
+        }
+    },
     "securityDefinitions": {
         "Authentication": {
             "type": "apiKey",
