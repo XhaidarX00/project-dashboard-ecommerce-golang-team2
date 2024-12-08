@@ -11,7 +11,7 @@ import (
 
 type OrderService interface {
 	UpdateOrderStatus(id int, status string) error
-	GetAllOrders() ([]models.Order, error)
+	GetAllOrders(page, limit int) ([]models.Order, int64, error)
 	GetOrderByID(id int) (*models.Order, error)
 	DeleteOrder(id int) error
 	GetOrderDetail(id int) (*models.Order, []models.OrderItem, error)
@@ -23,14 +23,17 @@ type orderService struct {
 }
 
 // GetAllOrders implements OrderService.
-func (o *orderService) GetAllOrders() ([]models.Order, error) {
-	o.Log.Info("Fetching all orders")
-	orders, err := o.Repo.Order.GetAll()
+func (o *orderService) GetAllOrders(page, limit int) ([]models.Order, int64, error) {
+	o.Log.Info("Fetching paginated orders", zap.Int("page", page), zap.Int("limit", limit))
+
+	// Panggil repository untuk mendapatkan data dengan pagination
+	orders, totalItems, err := o.Repo.Order.GetAll(page, limit)
 	if err != nil {
-		o.Log.Error("Failed to fetch orders", zap.Error(err))
-		return nil, err
+		o.Log.Error("Failed to fetch paginated orders", zap.Error(err))
+		return nil, 0, err
 	}
-	return orders, nil
+
+	return orders, totalItems, nil
 }
 
 // GetOrderByID implements OrderService.
