@@ -12,7 +12,7 @@ import (
 type OrderRepository interface {
 	UpdateStatus(id int, status string) error
 	GetByID(id int) (*models.Order, error)
-	GetAll() ([]models.Order, error)
+	GetAll(page, limit int) ([]models.Order, int64, error)
 	CountOrder() (int, error)
 	CountTotalPriceOrder() (float64, error)
 	GetEarningEachMonth() ([]models.Revenue, error)
@@ -82,13 +82,23 @@ func (o *orderRepository) CountOrder() (int, error) {
 }
 
 // GetAll implements OrderRepository.
-func (o *orderRepository) GetAll() ([]models.Order, error) {
+func (o *orderRepository) GetAll(page, limit int) ([]models.Order, int64, error) {
 	var orders []models.Order
-	if err := o.DB.Find(&orders).Error; err != nil {
-		o.Log.Error("Failed to retrieve orders", zap.Error(err))
-		return nil, err
+	var totalItems int64
+
+	offset := (page - 1) * limit
+
+	if err := o.DB.Model(&models.Order{}).Count(&totalItems).Error; err != nil {
+		o.Log.Error("Failed to count orders", zap.Error(err))
+		return nil, 0, err
 	}
-	return orders, nil
+
+	if err := o.DB.Limit(limit).Offset(offset).Find(&orders).Error; err != nil {
+		o.Log.Error("Failed to retrieve paginated orders", zap.Error(err))
+		return nil, 0, err
+	}
+
+	return orders, totalItems, nil
 }
 
 // GetByID implements OrderRepository.
