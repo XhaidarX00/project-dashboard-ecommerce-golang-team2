@@ -258,6 +258,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/list-promotion": {
+            "get": {
+                "description": "Retrieve a list of all promotions",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Promotions"
+                ],
+                "summary": "Get all promotions",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved promotions",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Promotion"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/promotion": {
             "get": {
                 "description": "Retrieve a specific promotion by its ID",
@@ -315,51 +362,6 @@ const docTemplate = `{
             }
         },
         "/api/promotions": {
-            "get": {
-                "description": "Retrieve a list of all promotions",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Promotions"
-                ],
-                "summary": "Get all promotions",
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved promotions",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/models.SuccessResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/models.Promotion"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
-            },
             "post": {
                 "description": "Create a new promotion with detailed information",
                 "consumes": [

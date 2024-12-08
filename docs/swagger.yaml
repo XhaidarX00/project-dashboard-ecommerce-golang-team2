@@ -446,6 +446,34 @@ paths:
       summary: Create a new banner
       tags:
       - Banner
+  /api/list-promotion:
+    get:
+      description: Retrieve a list of all promotions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved promotions
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Promotion'
+                  type: array
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all promotions
+      tags:
+      - Promotions
   /api/promotion:
     get:
       description: Retrieve a specific promotion by its ID
@@ -520,33 +548,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Delete a promotion
-      tags:
-      - Promotions
-    get:
-      description: Retrieve a list of all promotions
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved promotions
-          schema:
-            allOf:
-            - $ref: '#/definitions/models.SuccessResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/models.Promotion'
-                  type: array
-              type: object
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      summary: Get all promotions
       tags:
       - Promotions
     post:

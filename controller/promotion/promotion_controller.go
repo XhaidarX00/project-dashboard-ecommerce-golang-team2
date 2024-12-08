@@ -31,7 +31,7 @@ func NewPromotionController(service service.Service, log *zap.Logger) *Promotion
 // @Success 200 {object} models.SuccessResponse{data=[]models.Promotion} "Successfully retrieved promotions"
 // @Failure 400 {object} models.ErrorResponse "Bad request"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
-// @Router /api/promotions [get]
+// @Router /api/list-promotion [get]
 func (ctrl *PromotionController) GetAllPromotionsController(c *gin.Context) {
 	promotion, err := ctrl.Service.Promotion.GetAllPromotions()
 	if err != nil {
