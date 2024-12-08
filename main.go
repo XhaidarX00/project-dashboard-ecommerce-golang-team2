@@ -41,6 +41,8 @@ func main() {
 
 	r := routes.NewRoutes(*ctx)
 
+	// r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	// if err := r.Run(":8080"); err != nil {
 	// 	log.Fatalf("failed to run server: %v", err)
 	// }

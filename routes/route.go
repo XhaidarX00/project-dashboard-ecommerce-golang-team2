@@ -40,6 +40,12 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 }
 
 func bannerRoutes(r *gin.Engine, ctx infra.ServiceContext) {
+	bannerRoutes(r, ctx)
+	promotionRoutes(r, ctx)
+	return r
+}
+
+func bannerRoutes(r *gin.Engine, ctx infra.ServiceContext) {
 	banner := r.Group("/api")
 	banner.GET("/banner", ctx.Ctl.Banner.GetBannerByIDController)
 	banner.PUT("/banner", ctx.Ctl.Banner.UpdateBannerController)
