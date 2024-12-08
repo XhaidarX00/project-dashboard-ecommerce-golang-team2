@@ -749,6 +749,693 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/auth/check-email": {
+            "get": {
+                "description": "Verify if a user with the given email already exists in the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Check if email is already registered",
+                "parameters": [
+                    {
+                        "description": "Email to check",
+                        "name": "email",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CheckEmailRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Email check result",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to check user email",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "get": {
+                "description": "Authenticate a user and return a JWT token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "User Login",
+                "parameters": [
+                    {
+                        "description": "Login Request Body",
+                        "name": "loginRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User logged in successfully",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Failed to login user",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Register a new user with a provided request body",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Create a new user",
+                "parameters": [
+                    {
+                        "description": "User Registration Request Body",
+                        "name": "registerRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "User created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to create user",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/reset-password": {
+            "patch": {
+                "description": "Reset the password for a user using a provided request body",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Reset user password",
+                "parameters": [
+                    {
+                        "description": "User password reset request body",
+                        "name": "resetRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User password reset successfully",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to reset user password",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/best-item-list": {
+            "get": {
+                "description": "Retrieve a list of the best-selling products",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Get best product list",
+                "responses": {
+                    "200": {
+                        "description": "best product list successfully retrieved",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error getting best product list",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/current-month-earning": {
+            "get": {
+                "description": "Retrieve the earnings for the current month",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Get current month earnings",
+                "responses": {
+                    "200": {
+                        "description": "current month earnings successfully retrieved",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error getting earnings",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/revenue-chart": {
+            "get": {
+                "description": "Generate a revenue chart for the dashboard",
+                "produces": [
+                    "text/html"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Get revenue chart",
+                "responses": {
+                    "200": {
+                        "description": "\u003c!DOCTYPE html\u003e\u003chtml\u003e\u003chead\u003e\u003cmeta charset='utf-8'\u003e\u003ctitle\u003eAwesome go-echarts\u003c/title\u003e\u003cscript src='https://go-echarts.github.io/go-echarts-assets/assets/echarts.min.js'\u003e\u003c/script\u003e\u003c/head\u003e\u003cbody\u003e\u003cdiv class='container'\u003e\u003cdiv class='item' id='PvBdsRyYJxot' style='width:900px;height:500px;'\u003e\u003c/div\u003e\u003c/div\u003e\u003cscript type='text/javascript'\u003e\\\"use strict\\\";let goecharts_PvBdsRyYJxot = echarts.init(document.getElementById('PvBdsRyYJxot'), 'white', { renderer: 'canvas' });let option_PvBdsRyYJxot = {\\\"color\\\":[\\\"#5470c6\\\",\\\"#91cc75\\\",\\\"#fac858\\\",\\\"#ee6666\\\",\\\"#73c0de\\\",\\\"#3ba272\\\",\\\"#fc8452\\\",\\\"#9a60b4\\\",\\\"#ea7ccc\\\"],\\\"legend\\\":{},\\\"series\\\":[{\\\"name\\\":\\\"Revenue\\\",\\\"type\\\":\\\"line\\\",\\\"smooth\\\":true,\\\"data\\\":[{\\\"value\\\":150.75},{\\\"value\\\":300},{\\\"value\\\":500.5},{\\\"value\\\":175.25},{\\\"value\\\":250},{\\\"value\\\":100.75},{\\\"value\\\":400.5},{\\\"value\\\":300.25},{\\\"value\\\":275},{\\\"value\\\":125.5},{\\\"value\\\":500},{\\\"value\\\":350}]}],\\\"title\\\":{\\\"text\\\":\\\"Monthly Revenue\\\"},\\\"toolbox\\\":{},\\\"tooltip\\\":{},\\\"xAxis\\\":[{\\\"name\\\":\\\"Month\\\",\\\"data\\\":[\\\"January  \\\",\\\"February \\\",\\\"March    \\\",\\\"April    \\\",\\\"May      \\\",\\\"June     \\\",\\\"July     \\\",\\\"August   \\\",\\\"September\\\",\\\"October  \\\",\\\"November \\\",\\\"December \\\"]}],\\\"yAxis\\\":[{\\\"name\\\":\\\"Revenue\\\"}]}goecharts_PvBdsRyYJxot.setOption(option_PvBdsRyYJxot);\u003c/script\u003e\u003cstyle\u003e.container {margin-top:30px; display: flex;justify-content: center;align-items: center;}.item {margin: auto;}\u003c/style\u003e\u003c/body\u003e\u003c/html\u003e",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Error generating revenue chart",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/summary": {
+            "get": {
+                "description": "Retrieve a summary of the dashboard",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Get dashboard summary",
+                "responses": {
+                    "200": {
+                        "description": "dashboard summary successfully retrieved",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error getting summary",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/products": {
+            "get": {
+                "security": [
+                    {
+                        "Authentication": []
+                    },
+                    {
+                        "UserID": []
+                    }
+                ],
+                "description": "Get a paginated list of all products",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Get all products with pagination",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of products",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.PaginationResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "Data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.ProductWithCategory"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to fetch products",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Authentication": []
+                    },
+                    {
+                        "UserID": []
+                    }
+                ],
+                "description": "Create a new product with an image",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Creates a new product",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "category_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Product Name",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Code Product",
+                        "name": "code_product",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Description Product",
+                        "name": "description",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "Product Price",
+                        "name": "price",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Product Stock",
+                        "name": "stock",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Product Image",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Product created successfully",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.ResponseOK"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Product"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/products/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Authentication": []
+                    },
+                    {
+                        "UserID": []
+                    }
+                ],
+                "description": "Get a specific product by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Get product by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Product ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product details",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.ResponseOK"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Product"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Authentication": []
+                    },
+                    {
+                        "UserID": []
+                    }
+                ],
+                "description": "Update an existing product by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Update a product by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Product ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "category_id",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Product Name",
+                        "name": "name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Code Product",
+                        "name": "code_product",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Description Product",
+                        "name": "description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Product Price",
+                        "name": "price",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Product Stock",
+                        "name": "stock",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "Product Image",
+                        "name": "image",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Is Published",
+                        "name": "published",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product updated successfully",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.ResponseOK"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Product"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Authentication": []
+                    },
+                    {
+                        "UserID": []
+                    },
+                    {
+                        "UserRole": []
+                    }
+                ],
+                "description": "Delete a product by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Delete a product by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Product ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseOK"
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -815,6 +1502,18 @@ const docTemplate = `{
                 }
             }
         },
+        "models.CheckEmailRequest": {
+            "type": "object",
+            "required": [
+                "email"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "johndoe@example"
+                }
+            }
+        },
         "models.ErrorResponse": {
             "type": "object",
             "properties": {
@@ -823,6 +1522,24 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "string"
+                }
+            }
+        },
+        "models.LoginRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "johndoe@example.com"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 8,
+                    "example": "password123"
                 }
             }
         },
@@ -854,6 +1571,82 @@ const docTemplate = `{
                 "user_id": {
                     "type": "integer",
                     "example": 1
+                }
+            }
+        },
+        "models.Product": {
+            "type": "object",
+            "required": [
+                "category_id",
+                "code_product",
+                "name",
+                "price",
+                "stock"
+            ],
+            "properties": {
+                "category_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "code_product": {
+                    "type": "string",
+                    "example": "SPH-001"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Latest smartphone with advanced features"
+                },
+                "name": {
+                    "type": "string",
+                    "minLength": 3,
+                    "example": "Smartphone"
+                },
+                "price": {
+                    "type": "number",
+                    "example": 699.99
+                },
+                "published": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "stock": {
+                    "type": "integer",
+                    "example": 50
+                }
+            }
+        },
+        "models.ProductWithCategory": {
+            "type": "object",
+            "properties": {
+                "category_name": {
+                    "type": "string"
+                },
+                "code_product": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "published": {
+                    "type": "boolean"
+                },
+                "stock": {
+                    "type": "integer"
                 }
             }
         },
@@ -925,6 +1718,29 @@ const docTemplate = `{
                 }
             }
         },
+        "models.RegisterRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "name",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "johndoe@example.com"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 8,
+                    "example": "password123"
+                }
+            }
+        },
         "models.SuccessResponse": {
             "type": "object",
             "properties": {
@@ -933,6 +1749,47 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "utils.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error_msg": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "utils.PaginationResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "limit": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total_items": {
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "type": "integer"
+                }
+            }
+        },
+        "utils.ResponseOK": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
                     "type": "string"
                 }
             }
@@ -947,6 +1804,11 @@ const docTemplate = `{
         "UserID": {
             "type": "apiKey",
             "name": "User-ID",
+            "in": "header"
+        },
+        "UserRole": {
+            "type": "apiKey",
+            "name": "User-Role",
             "in": "header"
         }
     }

@@ -4,6 +4,7 @@ import (
 	"dashboard-ecommerce-team2/models"
 	"dashboard-ecommerce-team2/repository"
 	utils "dashboard-ecommerce-team2/util"
+	"errors"
 	"os"
 
 	"go.uber.org/zap"
@@ -11,9 +12,9 @@ import (
 
 type ProductService interface {
 	CreateProduct(product *models.Product, filePath string) (*models.Product, error)
-	GetAllProducts(page, pageSize int) ([]*models.Product, int, error)
-	GetProductByID(id int) (*models.Product, error)
-	UpdateProduct(productInput models.Product) error
+	GetAllProducts(page, pageSize int) ([]*models.ProductWithCategory, int, error)
+	GetProductByID(id int) (*models.ProductID, error)
+	UpdateProduct(id int, product models.Product, filePath string) (*models.Product, error)
 	DeleteProduct(id int) error
 }
 
@@ -44,28 +45,54 @@ func (p *productService) CreateProduct(product *models.Product, filePath string)
 
 // DeleteProduct implements ProductService.
 func (p *productService) DeleteProduct(id int) error {
-	panic("unimplemented")
+	err := p.Repo.Product.Delete(id)
+	if err != nil {
+		return errors.New("failed to delete product")
+	}
+	return nil
 }
 
 // GetAllProducts implements ProductService.
-func (p *productService) GetAllProducts(page, pageSize int) ([]*models.Product, int, error) {
+func (p *productService) GetAllProducts(page, pageSize int) ([]*models.ProductWithCategory, int, error) {
 	products, totalItems, err := p.Repo.Product.GetAll(page, pageSize)
 	if err != nil {
 		return nil, 0, err
 	}
-
+	if len(products) == 0 {
+		return nil, int(totalItems), errors.New("product not found")
+	}
 	// Convert totalItems from int64 to int before returning
 	return products, int(totalItems), nil
 }
 
 // GetProductByID implements ProductService.
-func (p *productService) GetProductByID(id int) (*models.Product, error) {
-	panic("unimplemented")
+func (p *productService) GetProductByID(id int) (*models.ProductID, error) {
+	product, err := p.Repo.Product.GetByID(id)
+	if err != nil {
+		return nil, errors.New("product not found")
+	}
+	return product, nil
 }
 
 // UpdateProduct implements ProductService.
-func (p *productService) UpdateProduct(productInput models.Product) error {
-	panic("unimplemented")
+func (p *productService) UpdateProduct(id int, product models.Product, filePath string) (*models.Product, error) {
+	if filePath != "" {
+        cdnURL, err := utils.UploadToCDN(filePath)
+        if err != nil {
+            p.Log.Error("service: upload failed", zap.Error(err))
+            return nil, err
+        }
+        product.Images = []string{cdnURL}
+    }
+
+    updatedProduct, err := p.Repo.Product.Update(id, product)
+    if err != nil {
+        p.Log.Error("service: update failed", zap.Error(err))
+        return nil, err
+    }
+
+    os.Remove(filePath) 
+    return updatedProduct, nil
 }
 
 func NewProductService(repo repository.Repository, log *zap.Logger) ProductService {

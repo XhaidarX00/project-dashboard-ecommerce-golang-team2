@@ -33,7 +33,7 @@ func NewUserController(service service.Service, log *zap.Logger, cacher database
 // CreateUserController godoc
 // @Summary      Create a new user
 // @Description  Register a new user with a provided request body
-// @Tags         User
+// @Tags         Auth
 // @Accept       json
 // @Produce      json
 // @Param        registerRequest  body     models.RegisterRequest  true  "User Registration Request Body"
@@ -65,7 +65,7 @@ func (ctrl *UserController) CreateUserController(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        loginRequest  body     models.LoginRequest  true  "Login Request Body"
-// @Success      200           {object} utils.LoginResponse   "User logged in successfully"
+// @Success      200           {object} helper.HTTPResponse   "User logged in successfully"
 // @Failure      400           {object} helper.HTTPResponse   "Invalid request body"
 // @Failure      401           {object} helper.HTTPResponse   "Failed to login user"
 // @Router       /auth/login [get]
@@ -99,18 +99,16 @@ func (ctrl *UserController) LoginController(c *gin.Context) {
 // CheckEmailUserController godoc
 // @Summary      Check if email is already registered
 // @Description  Verify if a user with the given email already exists in the system
-// @Tags         User
+// @Tags         Auth
 // @Accept       json
 // @Produce      json
-// @Param        email  body     struct{ Email string }  true  "Email to check"
+// @Param        email  body     models.CheckEmailRequest  true  "Email to check"
 // @Success      200    {object} helper.HTTPResponse     "Email check result"
 // @Failure      400    {object} helper.HTTPResponse     "Invalid request body"
 // @Failure      500    {object} helper.HTTPResponse     "Failed to check user email"
 // @Router       /auth/check-email [get]
 func (ctrl *UserController) CheckEmailUserController(c *gin.Context) {
-	request := struct {
-		Email string `json:"email"`
-	}{}
+	request := models.CheckEmailRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
 		ctrl.Log.Error("Invalid request body", zap.Error(err))
 		helper.ResponseError(c, err.Error(), "Invalid request body", http.StatusBadRequest)
@@ -129,7 +127,7 @@ func (ctrl *UserController) CheckEmailUserController(c *gin.Context) {
 // ResetUserPasswordController godoc
 // @Summary      Reset user password
 // @Description  Reset the password for a user using a provided request body
-// @Tags         User
+// @Tags         Auth
 // @Accept       json
 // @Produce      json
 // @Param        resetRequest  body     models.LoginRequest  true  "User password reset request body"

@@ -26,6 +26,10 @@ type RegisterRequest struct {
 	Password string `json:"password" binding:"required,min=8" example:"password123"`
 }
 
+type CheckEmailRequest struct {
+	Email string `json:"email" binding:"required,email" example:"johndoe@example"`
+}
+
 func UserSeed() []User {
 	return []User{
 		{

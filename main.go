@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	_ "dashboard-ecommerce-team2/docs"
 	"dashboard-ecommerce-team2/infra"
 	"dashboard-ecommerce-team2/routes"
 	"log"
@@ -12,8 +13,6 @@ import (
 	"time"
 
 	_ "dashboard-ecommerce-team2/docs"
-	// swaggerFiles "github.com/swaggo/files"
-	// ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // @title Dashboard Ecommerce Team 2
@@ -33,6 +32,9 @@ import (
 // @securityDefinitions.apikey UserID
 // @in header
 // @name User-ID
+// @securityDefinitions.apikey UserRole
+// @in header
+// @name User-Role
 
 func main() {
 	ctx, err := infra.NewServiceContext()
@@ -41,12 +43,6 @@ func main() {
 	}
 
 	r := routes.NewRoutes(*ctx)
-
-	// r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
-	// if err := r.Run(":8080"); err != nil {
-	// 	log.Fatalf("failed to run server: %v", err)
-	// }
 
 	srv := &http.Server{
 		Addr:    ":8080",

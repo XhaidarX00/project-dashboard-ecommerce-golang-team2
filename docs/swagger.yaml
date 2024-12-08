@@ -44,12 +44,33 @@ definitions:
           type: string
         type: array
     type: object
+  models.CheckEmailRequest:
+    properties:
+      email:
+        example: johndoe@example
+        type: string
+    required:
+    - email
+    type: object
   models.ErrorResponse:
     properties:
       message:
         type: string
       status:
         type: string
+    type: object
+  models.LoginRequest:
+    properties:
+      email:
+        example: johndoe@example.com
+        type: string
+      password:
+        example: password123
+        minLength: 8
+        type: string
+    required:
+    - email
+    - password
     type: object
   models.Order:
     properties:
@@ -73,6 +94,60 @@ definitions:
     - status
     - total_amount
     - user_id
+    type: object
+  models.Product:
+    properties:
+      category_id:
+        example: 1
+        type: integer
+      code_product:
+        example: SPH-001
+        type: string
+      description:
+        example: Latest smartphone with advanced features
+        type: string
+      name:
+        example: Smartphone
+        minLength: 3
+        type: string
+      price:
+        example: 699.99
+        type: number
+      published:
+        example: true
+        type: boolean
+      stock:
+        example: 50
+        type: integer
+    required:
+    - category_id
+    - code_product
+    - name
+    - price
+    - stock
+    type: object
+  models.ProductWithCategory:
+    properties:
+      category_name:
+        type: string
+      code_product:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      images:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      price:
+        type: number
+      published:
+        type: boolean
+      stock:
+        type: integer
     type: object
   models.Promotion:
     properties:
@@ -123,12 +198,56 @@ definitions:
     - name
     - start_date
     type: object
+  models.RegisterRequest:
+    properties:
+      email:
+        example: johndoe@example.com
+        type: string
+      name:
+        example: John Doe
+        type: string
+      password:
+        example: password123
+        minLength: 8
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
   models.SuccessResponse:
     properties:
       data: {}
       message:
         type: string
       status:
+        type: string
+    type: object
+  utils.ErrorResponse:
+    properties:
+      error_msg:
+        type: string
+      message:
+        type: string
+    type: object
+  utils.PaginationResponse:
+    properties:
+      data: {}
+      limit:
+        type: integer
+      message:
+        type: string
+      page:
+        type: integer
+      total_items:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  utils.ResponseOK:
+    properties:
+      data: {}
+      message:
         type: string
     type: object
 host: localhost:8080
@@ -600,6 +719,446 @@ paths:
       summary: Get order detail by ID
       tags:
       - orders
+  /auth/check-email:
+    get:
+      consumes:
+      - application/json
+      description: Verify if a user with the given email already exists in the system
+      parameters:
+      - description: Email to check
+        in: body
+        name: email
+        required: true
+        schema:
+          $ref: '#/definitions/models.CheckEmailRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Email check result
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Failed to check user email
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      summary: Check if email is already registered
+      tags:
+      - Auth
+  /auth/login:
+    get:
+      consumes:
+      - application/json
+      description: Authenticate a user and return a JWT token
+      parameters:
+      - description: Login Request Body
+        in: body
+        name: loginRequest
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User logged in successfully
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "401":
+          description: Failed to login user
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      summary: User Login
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with a provided request body
+      parameters:
+      - description: User Registration Request Body
+        in: body
+        name: registerRequest
+        required: true
+        schema:
+          $ref: '#/definitions/models.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created successfully
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Failed to create user
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      summary: Create a new user
+      tags:
+      - Auth
+  /auth/reset-password:
+    patch:
+      consumes:
+      - application/json
+      description: Reset the password for a user using a provided request body
+      parameters:
+      - description: User password reset request body
+        in: body
+        name: resetRequest
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User password reset successfully
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Failed to reset user password
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      summary: Reset user password
+      tags:
+      - Auth
+  /dashboard/best-item-list:
+    get:
+      description: Retrieve a list of the best-selling products
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: best product list successfully retrieved
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Error getting best product list
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      summary: Get best product list
+      tags:
+      - Dashboard
+  /dashboard/current-month-earning:
+    get:
+      description: Retrieve the earnings for the current month
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: current month earnings successfully retrieved
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Error getting earnings
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      summary: Get current month earnings
+      tags:
+      - Dashboard
+  /dashboard/revenue-chart:
+    get:
+      description: Generate a revenue chart for the dashboard
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: '<!DOCTYPE html><html><head><meta charset=''utf-8''><title>Awesome
+            go-echarts</title><script src=''https://go-echarts.github.io/go-echarts-assets/assets/echarts.min.js''></script></head><body><div
+            class=''container''><div class=''item'' id=''PvBdsRyYJxot'' style=''width:900px;height:500px;''></div></div><script
+            type=''text/javascript''>\"use strict\";let goecharts_PvBdsRyYJxot = echarts.init(document.getElementById(''PvBdsRyYJxot''),
+            ''white'', { renderer: ''canvas'' });let option_PvBdsRyYJxot = {\"color\":[\"#5470c6\",\"#91cc75\",\"#fac858\",\"#ee6666\",\"#73c0de\",\"#3ba272\",\"#fc8452\",\"#9a60b4\",\"#ea7ccc\"],\"legend\":{},\"series\":[{\"name\":\"Revenue\",\"type\":\"line\",\"smooth\":true,\"data\":[{\"value\":150.75},{\"value\":300},{\"value\":500.5},{\"value\":175.25},{\"value\":250},{\"value\":100.75},{\"value\":400.5},{\"value\":300.25},{\"value\":275},{\"value\":125.5},{\"value\":500},{\"value\":350}]}],\"title\":{\"text\":\"Monthly
+            Revenue\"},\"toolbox\":{},\"tooltip\":{},\"xAxis\":[{\"name\":\"Month\",\"data\":[\"January  \",\"February
+            \",\"March    \",\"April    \",\"May      \",\"June     \",\"July     \",\"August   \",\"September\",\"October  \",\"November
+            \",\"December \"]}],\"yAxis\":[{\"name\":\"Revenue\"}]}goecharts_PvBdsRyYJxot.setOption(option_PvBdsRyYJxot);</script><style>.container
+            {margin-top:30px; display: flex;justify-content: center;align-items: center;}.item
+            {margin: auto;}</style></body></html>'
+          schema:
+            type: string
+        "500":
+          description: Error generating revenue chart
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      summary: Get revenue chart
+      tags:
+      - Dashboard
+  /dashboard/summary:
+    get:
+      description: Retrieve a summary of the dashboard
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: dashboard summary successfully retrieved
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Error getting summary
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      summary: Get dashboard summary
+      tags:
+      - Dashboard
+  /products:
+    get:
+      consumes:
+      - application/json
+      description: Get a paginated list of all products
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of products
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.PaginationResponse'
+            - properties:
+                Data:
+                  items:
+                    $ref: '#/definitions/models.ProductWithCategory'
+                  type: array
+              type: object
+        "500":
+          description: Failed to fetch products
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - Authentication: []
+      - UserID: []
+      summary: Get all products with pagination
+      tags:
+      - Product
+    post:
+      consumes:
+      - application/json
+      description: Create a new product with an image
+      parameters:
+      - description: Category ID
+        in: formData
+        name: category_id
+        required: true
+        type: string
+      - description: Product Name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: Code Product
+        in: formData
+        name: code_product
+        required: true
+        type: string
+      - description: Description Product
+        in: formData
+        name: description
+        required: true
+        type: string
+      - description: Product Price
+        in: formData
+        name: price
+        required: true
+        type: number
+      - description: Product Stock
+        in: formData
+        name: stock
+        required: true
+        type: integer
+      - description: Product Image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Product created successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ResponseOK'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Product'
+              type: object
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - Authentication: []
+      - UserID: []
+      summary: Creates a new product
+      tags:
+      - Product
+  /products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a product by its ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product deleted successfully
+          schema:
+            $ref: '#/definitions/utils.ResponseOK'
+        "404":
+          description: Product not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - Authentication: []
+      - UserID: []
+      - UserRole: []
+      summary: Delete a product by ID
+      tags:
+      - Product
+    get:
+      consumes:
+      - application/json
+      description: Get a specific product by its ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product details
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ResponseOK'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Product'
+              type: object
+        "404":
+          description: Product not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - Authentication: []
+      - UserID: []
+      summary: Get product by ID
+      tags:
+      - Product
+    put:
+      consumes:
+      - application/json
+      description: Update an existing product by its ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Category ID
+        in: formData
+        name: category_id
+        type: string
+      - description: Product Name
+        in: formData
+        name: name
+        type: string
+      - description: Code Product
+        in: formData
+        name: code_product
+        type: string
+      - description: Description Product
+        in: formData
+        name: description
+        type: string
+      - description: Product Price
+        in: formData
+        name: price
+        type: number
+      - description: Product Stock
+        in: formData
+        name: stock
+        type: integer
+      - description: Product Image
+        in: formData
+        name: image
+        type: file
+      - description: Is Published
+        in: formData
+        name: published
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product updated successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ResponseOK'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Product'
+              type: object
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: Product not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - Authentication: []
+      - UserID: []
+      summary: Update a product by ID
+      tags:
+      - Product
 securityDefinitions:
   Authentication:
     in: header
@@ -608,5 +1167,9 @@ securityDefinitions:
   UserID:
     in: header
     name: User-ID
+    type: apiKey
+  UserRole:
+    in: header
+    name: User-Role
     type: apiKey
 swagger: "2.0"

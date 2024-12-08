@@ -14,13 +14,16 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	authRoutes(r, ctx)
-	dashboardRoutes(r, ctx)
+	authMiddleware := ctx.Middleware.Authentication()
+	adminMiddleware := ctx.Middleware.RoleAuthorization("admin")
 
-	productRoutes := r.Group("/products")
+	productRoutes := r.Group("/products", authMiddleware)
 	{
 		productRoutes.POST("/", ctx.Ctl.Product.CreateProductController)
 		productRoutes.GET("/", ctx.Ctl.Product.GetAllProductsController)
+		productRoutes.GET("/:id", ctx.Ctl.Product.GetProductByIDController)
+		productRoutes.DELETE("/:id", adminMiddleware, ctx.Ctl.Product.DeleteProductController)
+		productRoutes.PUT("/:id", ctx.Ctl.Product.UpdateProductController)
 	}
 
 	orderRoutes := r.Group("/orders")
@@ -32,6 +35,8 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 		orderRoutes.GET("/detail/:id", ctx.Ctl.Order.GetOrderDetailController)
 	}
 
+	authRoutes(r, ctx)
+	dashboardRoutes(r, ctx)
 	bannerRoutes(r, ctx)
 	promotionRoutes(r, ctx)
 	return r
