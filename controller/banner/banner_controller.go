@@ -29,7 +29,6 @@ func (ctrl *BannerController) CreateBannerController(c *gin.Context) {
 
 	// Bind the form data to the banner struct (without the file)
 	if err := c.ShouldBind(&banner); err != nil {
-		log.Println("Error binding form data:", err.Error())
 		helper.ResponseError(c, "INVALID", "invalid data input", http.StatusBadRequest)
 		c.Abort()
 		return

@@ -12,6 +12,7 @@ type PromotionService interface {
 	CreatePromotion(promoInput *models.Promotion) error
 	UpdatePromotion(promoInput *models.Promotion) error
 	DeletePromotion(id int) error
+	GetByIDPromotion(id int) (*models.Promotion, error)
 }
 
 type promotionService struct {
@@ -21,22 +22,27 @@ type promotionService struct {
 
 // CreatePromotion implements PromotionService.
 func (p *promotionService) CreatePromotion(promoInput *models.Promotion) error {
-	panic("unimplemented")
+	return p.Repo.Promotion.Create(promoInput)
 }
 
 // DeletePromotion implements PromotionService.
 func (p *promotionService) DeletePromotion(id int) error {
-	panic("unimplemented")
+	return p.Repo.Promotion.Delete(id)
 }
 
 // GetAllPromotions implements PromotionService.
 func (p *promotionService) GetAllPromotions() ([]models.Promotion, error) {
-	panic("unimplemented")
+	return p.Repo.Promotion.GetAll()
+}
+
+// GetByIdPromotion implements PromotionService.
+func (p *promotionService) GetByIDPromotion(id int) (*models.Promotion, error) {
+	return p.Repo.Promotion.GetByID(id)
 }
 
 // UpdatePromotion implements PromotionService.
 func (p *promotionService) UpdatePromotion(promoInput *models.Promotion) error {
-	panic("unimplemented")
+	return p.Repo.Promotion.Update(promoInput)
 }
 
 func NewPromotionService(repo repository.Repository, log *zap.Logger) PromotionService {

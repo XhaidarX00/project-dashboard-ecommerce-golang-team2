@@ -32,14 +32,26 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 		orderRoutes.GET("/detail/:id", ctx.Ctl.Order.GetOrderDetailController)
 	}
 
-	banner := r.Group("/api")
-	{
-		banner.GET("/banner", ctx.Ctl.Banner.GetBannerByIDController)
-		banner.DELETE("/banner", ctx.Ctl.Banner.DeleteBannerController)
-		banner.PUT("/banner", ctx.Ctl.Banner.UpdateBannerController)
-		banner.POST("/create-banner", ctx.Ctl.Banner.CreateBannerController)
-	}
+	bannerRoutes(r, ctx)
+	promotionRoutes(r, ctx)
 	return r
+}
+
+func bannerRoutes(r *gin.Engine, ctx infra.ServiceContext) {
+	banner := r.Group("/api")
+	banner.GET("/banner", ctx.Ctl.Banner.GetBannerByIDController)
+	banner.DELETE("/banner", ctx.Ctl.Banner.DeleteBannerController)
+	banner.PUT("/banner", ctx.Ctl.Banner.UpdateBannerController)
+	banner.POST("/create-banner", ctx.Ctl.Banner.CreateBannerController)
+}
+
+func promotionRoutes(r *gin.Engine, ctx infra.ServiceContext) {
+	promotion := r.Group("/api")
+	promotion.GET("/promotion", ctx.Ctl.Promotion.GetAllPromotionsController)
+	promotion.GET("/promotion:id", ctx.Ctl.Promotion.GetByIdPromotionsController)
+	promotion.DELETE("/promotion", ctx.Ctl.Promotion.DeletePromotionController)
+	promotion.PUT("/promotion", ctx.Ctl.Promotion.UpdatePromotionController)
+	promotion.POST("/create-promotion", ctx.Ctl.Promotion.CreatePromotionController)
 }
 
 func authRoutes(r *gin.Engine, ctx infra.ServiceContext) {

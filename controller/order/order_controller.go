@@ -164,7 +164,7 @@ func (ctrl *OrderController) DeleteOrderController(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "Order ID"
-// @Success 200 {object} helper.OrderDetailResponse
+// @Success 200 {object} helper.HTTPResponse
 // @Failure 400 {object} helper.HTTPResponse "Invalid order ID"
 // @Failure 500 {object} helper.HTTPResponse "Failed to fetch order details"
 // @Router /api/v1/orders/{id}/details [get]

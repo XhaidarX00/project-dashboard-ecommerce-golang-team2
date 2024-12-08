@@ -24,7 +24,621 @@ const docTemplate = `{
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {},
+    "paths": {
+        "/api/promotion": {
+            "get": {
+                "description": "Retrieve a specific promotion by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Promotions"
+                ],
+                "summary": "Get promotion by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Promotion ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved promotion",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Promotion"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid promotion ID",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/promotions": {
+            "get": {
+                "description": "Retrieve a list of all promotions",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Promotions"
+                ],
+                "summary": "Get all promotions",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved promotions",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Promotion"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new promotion with detailed information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Promotions"
+                ],
+                "summary": "Create a new promotion",
+                "parameters": [
+                    {
+                        "description": "Promotion Details",
+                        "name": "promotion",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Promotion"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully created promotion",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Promotion"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to create promotion",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a specific promotion by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Promotions"
+                ],
+                "summary": "Delete a promotion",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Promotion ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted promotion"
+                    },
+                    "400": {
+                        "description": "Invalid promotion ID",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to delete promotion",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/promotions/status": {
+            "put": {
+                "description": "Toggle the published status of a specific promotion",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Promotions"
+                ],
+                "summary": "Update promotion published status",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Promotion ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated promotion status",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Promotion"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid promotion ID",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update promotion",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/orders": {
+            "get": {
+                "description": "Get a list of all orders",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Get all orders",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Order"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/orders/{id}": {
+            "get": {
+                "description": "Get a single order by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Get order by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Order"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the status of an order by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Update order status",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "example": "\"shipped\"",
+                        "description": "Order Status",
+                        "name": "status",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated the order status",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid order ID",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update order status",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete an order by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Delete order by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted the order",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid order ID",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to delete the order",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/orders/{id}/details": {
+            "get": {
+                "description": "Get the details of an order by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Get order detail by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid order ID",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to fetch order details",
+                        "schema": {
+                            "$ref": "#/definitions/helper.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "helper.HTTPResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "error_msg": {
+                    "type": "string"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total_items": {
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Order": {
+            "type": "object",
+            "required": [
+                "payment_method",
+                "status",
+                "total_amount",
+                "user_id"
+            ],
+            "properties": {
+                "payment_method": {
+                    "type": "string",
+                    "example": "credit_card"
+                },
+                "shipping_address": {
+                    "type": "string",
+                    "example": "123 Main St"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "pending"
+                },
+                "total_amount": {
+                    "type": "number",
+                    "example": 150.75
+                },
+                "user_id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "models.Promotion": {
+            "type": "object",
+            "required": [
+                "end_date",
+                "name",
+                "start_date"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "example": "Special holiday discounts"
+                },
+                "discount": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[{\"value\":10",
+                        "\"type\":\"percentage\"}]"
+                    ]
+                },
+                "end_date": {
+                    "type": "string",
+                    "example": "2024-12-31"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Holiday Sale"
+                },
+                "product_name": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"Smartphone\"",
+                        " \"Laptop\"]"
+                    ]
+                },
+                "published": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "quota": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "start_date": {
+                    "type": "string",
+                    "example": "2024-12-01"
+                },
+                "status": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "type": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"discount\"",
+                        " \"bundle\"]"
+                    ]
+                }
+            }
+        },
+        "models.SuccessResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        }
+    },
     "securityDefinitions": {
         "Authentication": {
             "type": "apiKey",

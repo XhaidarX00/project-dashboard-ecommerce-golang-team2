@@ -10,6 +10,10 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	_ "dashboard-ecommerce-team2/docs"
+	// swaggerFiles "github.com/swaggo/files"
+	// ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // @title Dashboard Ecommerce Team 2
@@ -37,6 +41,8 @@ func main() {
 	}
 
 	r := routes.NewRoutes(*ctx)
+
+	// r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// if err := r.Run(":8080"); err != nil {
 	// 	log.Fatalf("failed to run server: %v", err)
