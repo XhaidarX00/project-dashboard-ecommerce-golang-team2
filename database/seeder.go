@@ -13,17 +13,30 @@ import (
 func SeedAll(db *gorm.DB) error {
 	return db.Transaction(func(tx *gorm.DB) error {
 		seeds := dataSeeds()
-		for i := range seeds {
-			err := tx.Clauses(clause.OnConflict{DoNothing: true}).Create(seeds[i]).Error
-			if nil != err {
-				name := reflect.TypeOf(seeds[i]).String()
-				errorMessage := err.Error()
-				log.Printf("%s seeder fail with %s", name, errorMessage)
+		for _, seed := range seeds {
+			var count int64
+			name := reflect.TypeOf(seed).String()
+
+			if err := tx.Model(seed).Count(&count).Error; err != nil {
+				log.Fatalf("Error checking data for table %s: %v", name, err)
+				return err
+			}
+
+			if count > 0 {
+				log.Printf("Seeding skipped for table %s, data already exists.", name)
 				continue
 			}
-			resetSequence(db, seeds[i])
 
+			err := tx.Clauses(clause.OnConflict{DoNothing: true}).Create(seed).Error
+			if err != nil {
+				errorMessage := err.Error()
+				log.Printf("%s seeder failed with error: %s", name, errorMessage)
+				continue
+			}
+
+			resetSequence(tx, seed)
 		}
+
 		log.Println("Seeding completed successfully.")
 		return nil
 	})
@@ -60,7 +73,7 @@ func getTableName(seed interface{}) string {
 func dataSeeds() []interface{} {
 	return []interface{}{
 		models.UserSeed(),
-		// models.CategorySeed(),
+		models.CategorySeed(),
 		models.ProductSeed(),
 		models.StockSeed(),
 		models.BannerSeed(),

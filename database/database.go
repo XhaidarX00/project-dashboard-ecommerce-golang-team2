@@ -59,13 +59,16 @@ func InitDB(config config.Configuration) (*gorm.DB, error) {
 		log.Println("Starting migration...")
 		err = Migrate(db)
 		if err != nil {
-			return nil, fmt.Errorf("ERROR: failed migrateAllTable, message: %s", err.Error())
+			log.Fatalf("ERROR: unable to migrate database: %v", err)
 		}
 		log.Println("Migration completed successfully.")
 
 		// running seeder
 		log.Println("Starting seeding...")
-		SeedAll(db)
+		err := SeedAll(db)
+		if err != nil {
+			log.Fatalf("ERROR: failed seedingAll, message: %s", err.Error())
+		}
 	}
 
 	return db, nil
