@@ -14,6 +14,9 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	authMiddleware := ctx.Middleware.Authentication()
+	adminMiddleware := ctx.Middleware.RoleAuthorization("admin")
+
 	authRoutes(r, ctx)
 
 	productRoutes := r.Group("/products")
@@ -22,22 +25,22 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 		productRoutes.GET("/", ctx.Ctl.Product.GetAllProductsController)
 	}
 
-	orderRoutes := r.Group("/orders")
+	orderRoutes := r.Group("/orders", authMiddleware)
 	{
 		orderRoutes.GET("/", ctx.Ctl.Order.GetAllOrdersController)
 		orderRoutes.GET("/:id", ctx.Ctl.Order.GetOrderByIDController)
 		orderRoutes.PUT("/update/:id", ctx.Ctl.Order.UpdateOrderStatusController)
-		orderRoutes.DELETE("/:id", ctx.Ctl.Order.DeleteOrderController)
+		orderRoutes.DELETE("/:id", adminMiddleware, ctx.Ctl.Order.DeleteOrderController)
 		orderRoutes.GET("/detail/:id", ctx.Ctl.Order.GetOrderDetailController)
 	}
 
-	categoryRoutes := r.Group("/category")
+	categoryRoutes := r.Group("/category", adminMiddleware)
 	{
 		categoryRoutes.POST("/create", ctx.Ctl.Category.CreateCatergoryController)
 		categoryRoutes.GET("/list", ctx.Ctl.Category.GetAllCategoriesController)
 		categoryRoutes.GET("/:id", ctx.Ctl.Category.GetCategoryByIDController)
 		categoryRoutes.PUT("/update/:id", ctx.Ctl.Category.UpdateCategoryController)
-		categoryRoutes.DELETE("/:id", ctx.Ctl.Category.DeleteCategoryController)
+		categoryRoutes.DELETE("/:id", adminMiddleware, ctx.Ctl.Category.DeleteCategoryController)
 	}
 
 	banner := r.Group("/api")
