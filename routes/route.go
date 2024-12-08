@@ -40,12 +40,6 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 }
 
 func bannerRoutes(r *gin.Engine, ctx infra.ServiceContext) {
-	bannerRoutes(r, ctx)
-	promotionRoutes(r, ctx)
-	return r
-}
-
-func bannerRoutes(r *gin.Engine, ctx infra.ServiceContext) {
 	banner := r.Group("/api")
 	banner.GET("/banner", ctx.Ctl.Banner.GetBannerByIDController)
 	banner.PUT("/banner", ctx.Ctl.Banner.UpdateBannerController)
@@ -77,6 +71,6 @@ func dashboardRoutes(r *gin.Engine, ctx infra.ServiceContext) {
 		dashboardGroup.GET("/summary", ctx.Ctl.Dashboard.GetSummaryController)
 		dashboardGroup.GET("/current-month-earning", ctx.Ctl.Dashboard.CurrentMonthEarningController)
 		dashboardGroup.GET("/revenue-chart", ctx.Ctl.Dashboard.RenevueChartController)
-		// dashboardGroup.GET("/best-item-list", ctx.Ctl.Dashboard.GetBestProductListController)
+		dashboardGroup.GET("/best-item-list", ctx.Ctl.Dashboard.GetBestProductListController)
 	}
 }
