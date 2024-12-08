@@ -40,18 +40,18 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 func bannerRoutes(r *gin.Engine, ctx infra.ServiceContext) {
 	banner := r.Group("/api")
 	banner.GET("/banner", ctx.Ctl.Banner.GetBannerByIDController)
-	banner.DELETE("/banner", ctx.Ctl.Banner.DeleteBannerController)
 	banner.PUT("/banner", ctx.Ctl.Banner.UpdateBannerController)
 	banner.POST("/create-banner", ctx.Ctl.Banner.CreateBannerController)
+	banner.DELETE("/banner", ctx.Middleware.RoleAuthorization("admin"), ctx.Ctl.Banner.DeleteBannerController)
 }
 
 func promotionRoutes(r *gin.Engine, ctx infra.ServiceContext) {
 	promotion := r.Group("/api")
 	promotion.GET("/promotion", ctx.Ctl.Promotion.GetAllPromotionsController)
 	promotion.GET("/promotion:id", ctx.Ctl.Promotion.GetByIdPromotionsController)
-	promotion.DELETE("/promotion", ctx.Ctl.Promotion.DeletePromotionController)
 	promotion.PUT("/promotion", ctx.Ctl.Promotion.UpdatePromotionController)
 	promotion.POST("/create-promotion", ctx.Ctl.Promotion.CreatePromotionController)
+	promotion.DELETE("/promotion", ctx.Middleware.RoleAuthorization("admin"), ctx.Ctl.Promotion.DeletePromotionController)
 }
 
 func authRoutes(r *gin.Engine, ctx infra.ServiceContext) {

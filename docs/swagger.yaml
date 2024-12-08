@@ -155,6 +155,11 @@ paths:
     delete:
       description: Delete a specific promotion by its ID
       parameters:
+      - description: Role
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Promotion ID
         in: query
         name: id
@@ -165,14 +170,26 @@ paths:
       responses:
         "200":
           description: Successfully deleted promotion
+          schema:
+            $ref: '#/definitions/models.SuccessResponse'
         "400":
           description: Invalid promotion ID
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden - Insufficient privileges
           schema:
             $ref: '#/definitions/models.ErrorResponse'
         "500":
           description: Failed to delete promotion
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
       summary: Delete a promotion
       tags:
       - Promotions

@@ -143,9 +143,13 @@ func (ctrl *PromotionController) UpdatePromotionController(c *gin.Context) {
 // @Description Delete a specific promotion by its ID
 // @Tags Promotions
 // @Produce json
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Role"
 // @Param id query int true "Promotion ID"
-// @Success 200 {object} nil "Successfully deleted promotion"
+// @Success 200 {object} models.SuccessResponse "Successfully deleted promotion"
 // @Failure 400 {object} models.ErrorResponse "Invalid promotion ID"
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 403 {object} models.ErrorResponse "Forbidden - Insufficient privileges"
 // @Failure 500 {object} models.ErrorResponse "Failed to delete promotion"
 // @Router /api/promotions [delete]
 func (ctrl *PromotionController) DeletePromotionController(c *gin.Context) {

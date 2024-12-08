@@ -202,6 +202,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete a specific promotion by its ID",
                 "produces": [
                     "application/json"
@@ -212,6 +217,13 @@ const docTemplate = `{
                 "summary": "Delete a promotion",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Role",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "type": "integer",
                         "description": "Promotion ID",
                         "name": "id",
@@ -221,10 +233,25 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfully deleted promotion"
+                        "description": "Successfully deleted promotion",
+                        "schema": {
+                            "$ref": "#/definitions/models.SuccessResponse"
+                        }
                     },
                     "400": {
                         "description": "Invalid promotion ID",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - Insufficient privileges",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
