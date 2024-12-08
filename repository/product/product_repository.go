@@ -4,6 +4,9 @@ import (
 	"dashboard-ecommerce-team2/models"
 	"time"
 
+	"encoding/json"
+	"fmt"
+
 	// "encoding/json"
 
 	"go.uber.org/zap"
@@ -12,10 +15,10 @@ import (
 
 type ProductRepository interface {
 	Create(productInput *models.Product) error
-	Update(productInput models.Product) error
+	Update(id int, productInput models.Product) (*models.Product, error)
 	Delete(id int) error
-	GetByID(id int) (*models.Product, error)
-	GetAll(page, pageSize int) ([]*models.Product, int64, error)
+	GetByID(id int) (*models.ProductID, error)
+	GetAll(page, pageSize int) ([]*models.ProductWithCategory, int64, error)
 	CountProduct() (int, error)
 	CountEachProduct() ([]models.BestProduct, error)
 }
@@ -97,12 +100,30 @@ func (p *productRepository) Create(productInput *models.Product) error {
 
 // Delete implements ProductRepository.
 func (p *productRepository) Delete(id int) error {
-	panic("unimplemented")
+	var product models.Product
+
+	err := p.DB.First(&product, id).Error
+	if err != nil {
+		if err.Error() == "record not found" {
+			return fmt.Errorf("product not found")
+		}
+		p.Log.Error("Failed to fetch product for deletion", zap.Error(err))
+		return err
+	}
+
+	err = p.DB.Delete(&product).Error
+	if err != nil {
+		p.Log.Error("Failed to delete product", zap.Error(err))
+		return err
+	}
+
+	return nil
 }
 
 // GetAll implements ProductRepository.
-func (p *productRepository) GetAll(page, pageSize int) ([]*models.Product, int64, error) {
-	var products []*models.Product
+func (p *productRepository) GetAll(page, pageSize int) ([]*models.ProductWithCategory, int64, error) {
+	// var products []*models.Product
+	var productsWithCategory []*models.ProductWithCategory
 	var totalItems int64
 
 	offset := (page - 1) * pageSize
@@ -115,18 +136,67 @@ func (p *productRepository) GetAll(page, pageSize int) ([]*models.Product, int64
 	}
 
 	// Mengambil produk dengan pagination
-	err = p.DB.Offset(offset).Limit(pageSize).Find(&products).Error
+	err = p.DB.Table("products").
+		Select(`products.id, 
+            categories.name AS category_name, 
+            products.name, 
+            products.code_product, 
+            products.images, 
+            products.description, 
+            products.stock, 
+            products.price, 
+            products.published`).
+		Joins("JOIN categories ON categories.id = products.category_id").
+		Offset(offset).
+		Limit(pageSize).
+		Find(&productsWithCategory).Error
+
 	if err != nil {
 		p.Log.Error("Failed to fetch products", zap.Error(err))
 		return nil, 0, err
 	}
 
-	return products, totalItems, nil
+	return productsWithCategory, totalItems, nil
 }
 
 // GetByID implements ProductRepository.
-func (p *productRepository) GetByID(id int) (*models.Product, error) {
-	panic("unimplemented")
+func (p *productRepository) GetByID(id int) (*models.ProductID, error) {
+	var productID models.ProductID
+	var variantJSON []byte
+
+	err := p.DB.Table("products").
+		Select(`
+			products.id, 
+			products.category_id,
+			categories.name AS category_name, 
+			CASE WHEN categories.variant = '{}' THEN NULL ELSE categories.variant END AS variant,
+			products.name, 
+			products.code_product, 
+			products.images, 
+			products.description, 
+			products.stock, 
+			products.price, 
+			products.published
+		`).
+		Joins("JOIN categories ON categories.id = products.category_id").
+		Where("products.id = ?", id).
+		First(&productID).Error
+
+	if err != nil {
+		if err.Error() == "record not found" {
+			return nil, fmt.Errorf("product not found")
+		}
+		p.Log.Error("Failed to fetch product by ID", zap.Error(err))
+		return nil, err
+	}
+	if len(variantJSON) > 0 {
+		if err := json.Unmarshal(variantJSON, &productID.Variant); err != nil {
+			p.Log.Error("Repository: failed to unmarshal variant JSON", zap.Error(err))
+			return nil, err
+		}
+	}
+
+	return &productID, nil
 }
 
 // Update implements ProductRepository.
