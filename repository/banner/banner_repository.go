@@ -16,13 +16,13 @@ type BannerRepository interface {
 	GetByID(id int) (*models.Banner, error)
 }
 
-type bannerRepository struct {
+type BannerRepo struct {
 	DB  *gorm.DB
 	Log *zap.Logger
 }
 
 // Create implements BannerRepository.
-func (b *bannerRepository) Create(bannerInput *models.Banner) error {
+func (b *BannerRepo) Create(bannerInput *models.Banner) error {
 	err := b.DB.Create(bannerInput).Error
 	if err != nil {
 		b.Log.Error("Error from repo creating banner:", zap.Error(err))
@@ -33,7 +33,7 @@ func (b *bannerRepository) Create(bannerInput *models.Banner) error {
 }
 
 // Delete implements BannerRepository.
-func (b *bannerRepository) Delete(id int) error {
+func (b *BannerRepo) Delete(id int) error {
 	var banner models.Banner
 	err := b.DB.First(&banner, id).Error
 	if err != nil {
@@ -57,7 +57,7 @@ func (b *bannerRepository) Delete(id int) error {
 }
 
 // GetByID implements BannerRepository.
-func (b *bannerRepository) GetByID(id int) (*models.Banner, error) {
+func (b *BannerRepo) GetByID(id int) (*models.Banner, error) {
 	var banner models.Banner
 
 	// Mencari banner berdasarkan ID
@@ -76,7 +76,7 @@ func (b *bannerRepository) GetByID(id int) (*models.Banner, error) {
 }
 
 // Update implements BannerRepository.
-func (b *bannerRepository) Update(bannerInput models.Banner) error {
+func (b *BannerRepo) Update(bannerInput models.Banner) error {
 	err := b.DB.Save(bannerInput).Error
 	if err != nil {
 		b.Log.Error("Error from repo updating banner:", zap.Error(err))
@@ -87,5 +87,5 @@ func (b *bannerRepository) Update(bannerInput models.Banner) error {
 }
 
 func NewBannerRepository(db *gorm.DB, log *zap.Logger) BannerRepository {
-	return &bannerRepository{DB: db, Log: log}
+	return &BannerRepo{DB: db, Log: log}
 }

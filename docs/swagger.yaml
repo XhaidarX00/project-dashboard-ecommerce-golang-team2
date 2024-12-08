@@ -16,6 +16,34 @@ definitions:
       total_pages:
         type: integer
     type: object
+  models.Banner:
+    properties:
+      end_date:
+        example: "2024-03-31"
+        type: string
+      image:
+        example: /images/banner1.png
+        type: string
+      path_page:
+        example: /spring-sale
+        type: string
+      published:
+        example: true
+        type: boolean
+      release_date:
+        example: "2024-03-01"
+        type: string
+      title:
+        example: Spring Sale 2024
+        type: string
+      type:
+        example:
+        - '["seasonal"'
+        - ' "promo"]'
+        items:
+          type: string
+        type: array
+    type: object
   models.ErrorResponse:
     properties:
       message:
@@ -117,6 +145,151 @@ info:
   title: Dashboard Ecommerce Team 2
   version: "1.0"
 paths:
+  /api/banner:
+    delete:
+      consumes:
+      - multipart/form-data
+      description: Remove a banner by its ID
+      parameters:
+      - description: Role
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Banner ID
+        in: formData
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted banner
+          schema:
+            $ref: '#/definitions/models.SuccessResponse'
+        "400":
+          description: Invalid banner ID
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Failed to delete banner
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a banner
+      tags:
+      - Banner
+    get:
+      consumes:
+      - multipart/form-data
+      description: Retrieve a specific banner by its ID
+      parameters:
+      - description: Banner ID
+        in: formData
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved banner
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Banner'
+              type: object
+        "400":
+          description: Invalid banner ID
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Failed to retrieve banner
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get banner by ID
+      tags:
+      - Banner
+    put:
+      consumes:
+      - multipart/form-data
+      description: Toggle the published status of a banner
+      parameters:
+      - description: Banner ID
+        in: formData
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated published banner
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Banner'
+              type: object
+        "400":
+          description: Invalid banner ID
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Failed to update banner
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Update banner published status
+      tags:
+      - Banner
+  /api/create-banner:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Create a new banner with image upload
+      parameters:
+      - description: Banner Title
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: Banner Description
+        in: formData
+        name: description
+        type: string
+      - description: Banner Image
+        in: formData
+        name: image_path
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created banner
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Banner'
+              type: object
+        "400":
+          description: Invalid data input
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Failed to upload image or create banner
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create a new banner
+      tags:
+      - Banner
   /api/promotion:
     get:
       description: Retrieve a specific promotion by its ID
