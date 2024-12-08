@@ -49,13 +49,12 @@ func (ctrl *DashboardController) GetSummaryController(c *gin.Context) {
 func (ctrl *DashboardController) CurrentMonthEarningController(c *gin.Context) {
 	earnings, err := ctrl.Service.Dashboard.CurrentMonthEarning()
 	if err != nil {
-		ctrl.Log.Error("Error getting earnings", zap.Error(err))
-		helper.ResponseError(c, err.Error(), "Error getting earnings", http.StatusInternalServerError)
+		ctrl.Log.Error("Error getting current month earning", zap.Error(err))
+		helper.ResponseError(c, err.Error(), "Error getting current month earning", http.StatusInternalServerError)
 		return
 	}
 
 	helper.ResponseOK(c, earnings, "current month earnings successfully retrieved", http.StatusOK)
-
 }
 
 // @Summary Get revenue chart
