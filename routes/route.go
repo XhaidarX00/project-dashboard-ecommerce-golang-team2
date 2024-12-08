@@ -58,7 +58,7 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 }
 
 func bannerRoutes(r *gin.Engine, ctx infra.ServiceContext) {
-	banner := r.Group("/api")
+	banner := r.Group("/api", ctx.Middleware.Authentication())
 	banner.GET("/banner", ctx.Ctl.Banner.GetBannerByIDController)
 	banner.PUT("/banner", ctx.Ctl.Banner.UpdateBannerController)
 	banner.POST("/create-banner", ctx.Ctl.Banner.CreateBannerController)
@@ -66,7 +66,7 @@ func bannerRoutes(r *gin.Engine, ctx infra.ServiceContext) {
 }
 
 func promotionRoutes(r *gin.Engine, ctx infra.ServiceContext) {
-	promotion := r.Group("/api")
+	promotion := r.Group("/api", ctx.Middleware.Authentication())
 	promotion.GET("/promotion", ctx.Ctl.Promotion.GetAllPromotionsController)
 	promotion.GET("/promotion:id", ctx.Ctl.Promotion.GetByIdPromotionsController)
 	promotion.PUT("/promotion", ctx.Ctl.Promotion.UpdatePromotionController)
