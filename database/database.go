@@ -54,7 +54,7 @@ func InitDB(config config.Configuration) (*gorm.DB, error) {
 	}
 	log.Println("INFO: Database connected successfully!")
 
-	if config.MigrateUsed {
+	if !config.MigrateUsed {
 		// Migration tabel form struct
 		log.Println("Starting migration...")
 		err = Migrate(db)
