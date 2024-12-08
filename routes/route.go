@@ -31,6 +31,15 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 		orderRoutes.GET("/detail/:id", ctx.Ctl.Order.GetOrderDetailController)
 	}
 
+	categoryRoutes := r.Group("/category")
+	{
+		categoryRoutes.POST("/create", ctx.Ctl.Category.CreateCatergoryController)
+		categoryRoutes.GET("/list", ctx.Ctl.Category.GetAllCategoriesController)
+		categoryRoutes.GET("/:id", ctx.Ctl.Category.GetCategoryByIDController)
+		categoryRoutes.PUT("/update/:id", ctx.Ctl.Category.UpdateCategoryController)
+		categoryRoutes.DELETE("/:id", ctx.Ctl.Category.DeleteCategoryController)
+	}
+
 	banner := r.Group("/api")
 	{
 		banner.GET("/banner", ctx.Ctl.Banner.GetBannerByIDController)

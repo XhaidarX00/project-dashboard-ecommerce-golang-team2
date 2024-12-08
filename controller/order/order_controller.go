@@ -4,6 +4,7 @@ import (
 	"dashboard-ecommerce-team2/helper"
 	"dashboard-ecommerce-team2/models"
 	"dashboard-ecommerce-team2/service"
+	"math"
 	"net/http"
 	"strconv"
 
@@ -34,7 +35,7 @@ func NewOrderController(service service.Service, log *zap.Logger) *OrderControll
 // @Success 200 {object} helper.HTTPResponse "Successfully updated the order status"
 // @Failure 400 {object} helper.HTTPResponse "Invalid order ID"
 // @Failure 500 {object} helper.HTTPResponse "Failed to update order status"
-// @Router /api/v1/orders/{id} [put]
+// @Router /orders/{id} [put]
 func (ctrl *OrderController) UpdateOrderStatusController(c *gin.Context) {
 	idStr := c.Param("id")
 	ctrl.Log.Info("Received ID from URL", zap.String("id", idStr))
@@ -73,22 +74,38 @@ func (ctrl *OrderController) UpdateOrderStatusController(c *gin.Context) {
 }
 
 // GetAllOrdersController godoc
-// @Summary Get all orders
-// @Description Get a list of all orders
+// @Summary Get all orders with pagination
+// @Description Get a paginated list of orders
 // @Tags orders
 // @Accept json
 // @Produce json
-// @Success 200 {array} models.Order
-// @Router /api/v1/orders [get]
+// @Param page query int false "Page number" default(1)
+// @Param limit query int false "Number of items per page" default(10)
+// @Success 200 {object} helper.HTTPResponse
+// @Router /orders/ [get]
 func (ctrl *OrderController) GetAllOrdersController(c *gin.Context) {
-	orders, err := ctrl.Service.Order.GetAllOrders()
+	pageParam := c.DefaultQuery("page", "1")
+	limitParam := c.DefaultQuery("limit", "10")
+
+	page, err := strconv.Atoi(pageParam)
+	if err != nil || page < 1 {
+		page = 1
+	}
+	limit, err := strconv.Atoi(limitParam)
+	if err != nil || limit < 1 {
+		limit = 10
+	}
+
+	orders, totalItems, err := ctrl.Service.Order.GetAllOrders(page, limit)
 	if err != nil {
-		ctrl.Log.Error("Failed to fetch all orders", zap.Error(err))
-		helper.ResponseError(c, err.Error(), "Failed to fetch all orders", http.StatusInternalServerError)
+		ctrl.Log.Error("Failed to fetch paginated orders", zap.Error(err))
+		helper.ResponseError(c, err.Error(), "Failed to fetch orders", http.StatusInternalServerError)
 		return
 	}
 
-	helper.ResponseOK(c, orders, "Fetched all orders successfully", http.StatusOK)
+	totalPages := int(math.Ceil(float64(totalItems) / float64(limit)))
+
+	helper.ResponseOKPagination(c, orders, "Fetched orders successfully", page, limit, int(totalItems), totalPages, http.StatusOK)
 }
 
 // GetOrderByIDController godoc
@@ -99,7 +116,7 @@ func (ctrl *OrderController) GetAllOrdersController(c *gin.Context) {
 // @Produce json
 // @Param id path int true "Order ID"
 // @Success 200 {object} models.Order
-// @Router /api/v1/orders/{id} [get]
+// @Router /orders/{id} [get]
 func (ctrl *OrderController) GetOrderByIDController(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -128,7 +145,7 @@ func (ctrl *OrderController) GetOrderByIDController(c *gin.Context) {
 // @Success 200 {object} helper.HTTPResponse "Successfully deleted the order"
 // @Failure 400 {object} helper.HTTPResponse "Invalid order ID"
 // @Failure 500 {object} helper.HTTPResponse "Failed to delete the order"
-// @Router /api/v1/orders/{id} [delete]
+// @Router /orders/{id} [delete]
 func (ctrl *OrderController) DeleteOrderController(c *gin.Context) {
 	idStr := c.Param("id")
 	ctrl.Log.Info("Received ID from URL", zap.String("id", idStr))
@@ -167,7 +184,7 @@ func (ctrl *OrderController) DeleteOrderController(c *gin.Context) {
 // @Success 200 {object} helper.OrderDetailResponse
 // @Failure 400 {object} helper.HTTPResponse "Invalid order ID"
 // @Failure 500 {object} helper.HTTPResponse "Failed to fetch order details"
-// @Router /api/v1/orders/{id}/details [get]
+// @Router /orders/detail/{id} [get]
 func (ctrl *OrderController) GetOrderDetailController(c *gin.Context) {
 	idStr := c.Param("id")
 	ctrl.Log.Info("Received ID from URL", zap.String("id", idStr))
