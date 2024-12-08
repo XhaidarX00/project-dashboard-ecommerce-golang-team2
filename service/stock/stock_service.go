@@ -10,8 +10,8 @@ import (
 )
 
 type StockService interface {
-	UpdateProductStock(newStock int) error
-	GetProductStockDetail(id int) (*models.StockHistoryResponse, error)
+	UpdateProductStock(stockHistory *models.StockRequest) error
+	GetProductStockDetail(id int) (*models.StockResponse, error)
 	DeleteProductStock(id int) error
 }
 
@@ -30,7 +30,7 @@ func (s *stockService) DeleteProductStock(id int) error {
 }
 
 // GetProductStockDetail implements StockService.
-func (s *stockService) GetProductStockDetail(id int) (*models.StockHistoryResponse, error) {
+func (s *stockService) GetProductStockDetail(id int) (*models.StockResponse, error) {
 	stockHistory, err := s.Repo.Stock.GetByID(id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get history: %w", err)
@@ -39,8 +39,11 @@ func (s *stockService) GetProductStockDetail(id int) (*models.StockHistoryRespon
 }
 
 // UpdateProductStock implements StockService.
-func (s *stockService) UpdateProductStock(newStock int) error {
-	panic("unimplemented")
+func (s *stockService) UpdateProductStock(stockHistory *models.StockRequest) error {
+	if err := s.Repo.Stock.Update(stockHistory); err != nil {
+		return fmt.Errorf("failed to update stock: %w", err)
+	}
+	return nil
 }
 
 func NewStockService(repo repository.Repository, log *zap.Logger) StockService {

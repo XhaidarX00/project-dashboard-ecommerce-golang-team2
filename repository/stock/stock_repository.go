@@ -4,15 +4,16 @@ import (
 	"dashboard-ecommerce-team2/models"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
 type StockRepository interface {
-	Update(StockInput models.StockHistory) error
+	Update(stockHistory *models.StockRequest) error
 	Delete(id int) error
-	GetByID(id int) (*models.StockHistoryResponse, error)
+	GetByID(id int) (*models.StockResponse, error)
 }
 
 type stockRepository struct {
@@ -22,7 +23,7 @@ type stockRepository struct {
 
 // Delete implements StockRepository.
 func (s *stockRepository) Delete(id int) error {
-	var stockHistory models.StockHistory
+	var stockHistory models.Stock
 
 	err := s.DB.First(&stockHistory, id).Error
 	if err != nil {
@@ -42,37 +43,78 @@ func (s *stockRepository) Delete(id int) error {
 }
 
 // GetByID implements StockRepository.
-func (s *stockRepository) GetByID(id int) (*models.StockHistoryResponse, error) {
-	var stockHistory models.StockHistoryResponse
+func (s *stockRepository) GetByID(id int) (*models.StockResponse, error) {
+	var stockHistory models.StockResponse
 	var variantJSON []byte
-	
-	err := s.DB.Table("stock_histories").
-		Select("stock_histories.id, stock_histories.product_id, stock_histories.type, stock_histories.created_at, stock_histories.updated_at, products.name as product_name, products.stock as product_stock, CASE WHEN categories.variant = '{}' THEN NULL ELSE categories.variant END AS variant").
-		Joins("JOIN products ON products.id = stock_histories.product_id").
+
+	err := s.DB.Table("stocks").
+		Select("stocks.id, stocks.product_id, stocks.type, stocks.quantity, stocks.created_at, stocks.updated_at, products.name as product_name, CASE WHEN categories.variant = '{}' THEN NULL ELSE categories.variant END AS variant").
+		Joins("JOIN products ON products.id = stocks.product_id").
 		Joins("JOIN categories ON categories.id = products.category_id").
-		Where("stock_histories.id = ?", id).
+		Where("stocks.id = ?", id).
 		First(&stockHistory).Error
 
-		if err != nil {
-			if err.Error() == "record not found" {
-				return nil, fmt.Errorf("product not found")
-			}
-			s.Log.Error("Failed to fetch product by ID", zap.Error(err))
+	if err != nil {
+		if err.Error() == "record not found" {
+			return nil, fmt.Errorf("product not found")
+		}
+		s.Log.Error("Failed to fetch product by ID", zap.Error(err))
+		return nil, err
+	}
+	if len(variantJSON) > 0 {
+		if err := json.Unmarshal(variantJSON, &stockHistory.Variant); err != nil {
+			s.Log.Error("Repository: failed to unmarshal variant JSON", zap.Error(err))
 			return nil, err
 		}
-		if len(variantJSON) > 0 {
-			if err := json.Unmarshal(variantJSON, &stockHistory.Variant); err != nil {
-				s.Log.Error("Repository: failed to unmarshal variant JSON", zap.Error(err))
-				return nil, err
-			}
-		}
+	}
 
 	return &stockHistory, nil
 }
 
 // UpdateStock implements StockRepository.
-func (s *stockRepository) Update(StockInput models.StockHistory) error {
-	panic("unimplemented")
+func (s *stockRepository) Update(stockHistory *models.StockRequest) error {
+	tx := s.DB.Begin()
+
+	var currentStock int
+	if err := tx.Table("products").
+		Select("stock").
+		Where("id = ?", stockHistory.ProductID).
+		Scan(&currentStock).Error; err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to fetch current stock: %w", err)
+	}
+
+	newStock := currentStock
+	if stockHistory.Type == "in" {
+		newStock += stockHistory.Quantity
+	} else if stockHistory.Type == "out" {
+		if stockHistory.Quantity > currentStock {
+			tx.Rollback()
+			return fmt.Errorf("insufficient stock")
+		}
+		newStock -= stockHistory.Quantity
+	} else {
+		tx.Rollback()
+		return fmt.Errorf("invalid stock type")
+	}
+
+	if err := tx.Table("products").
+		Where("id = ?", stockHistory.ProductID).
+		Updates(map[string]interface{}{
+			"stock":      newStock,
+			"updated_at": time.Now(),
+		}).Error; err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to update product stock: %w", err)
+	}
+
+	if err := tx.Table("stocks").Create(stockHistory).Error; err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to create stock history: %w", err)
+	}
+
+	tx.Commit()
+	return nil
 }
 
 func NewStockRepository(db *gorm.DB, log *zap.Logger) StockRepository {

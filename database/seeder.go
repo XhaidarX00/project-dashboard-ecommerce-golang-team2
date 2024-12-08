@@ -62,7 +62,7 @@ func dataSeeds() []interface{} {
 		models.UserSeed(),
 		// models.CategorySeed(),
 		models.ProductSeed(),
-		models.StockHistorySeed(),
+		models.StockSeed(),
 		models.BannerSeed(),
 		models.OrderSeed(),
 		models.OrderItemSeed(),

@@ -2,6 +2,7 @@ package stockcontroller
 
 import (
 	"dashboard-ecommerce-team2/helper"
+	"dashboard-ecommerce-team2/models"
 	"dashboard-ecommerce-team2/service"
 	"net/http"
 
@@ -21,7 +22,54 @@ func NewStockController(service service.Service, log *zap.Logger) *StockControll
 	}
 }
 
-func (ctrl *StockController) UpdateProductStockController(c *gin.Context) {}
+// UpdateProductStockController godoc
+// @Summary      Update product stock
+// @Description  Update the stock of a product (increase or decrease).
+// @Tags         Stock
+// @Accept       json
+// @Produce      json
+// @Param        stock_request  body      models.StockRequest  true  "Stock update request"
+// @Success      200            {object}  utils.ResponseOK "Update success"
+// @Failure      400            {object}  utils.ErrorResponse "Invalid input"
+// @Failure      500            {object}  utils.ErrorResponse "Internal server error"
+// @Security Authentication
+// @Security UserID
+// @Router       /stock [put]
+func (ctrl *StockController) UpdateProductStockController(c *gin.Context) {
+	var req models.StockRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		ctrl.Log.Warn("invalid input", zap.Error(err))
+		helper.ResponseError(c, "Invalid input", helper.FormatValidationError(err), http.StatusBadRequest)
+		return
+	}
+
+	if req.Type != "in" && req.Type != "out" {
+		ctrl.Log.Warn("invalid stock type", zap.String("type", req.Type))
+		helper.ResponseError(c, "Invalid stock type", "Type must be 'in' or 'out'", http.StatusBadRequest)
+		return
+	}
+
+	if err := ctrl.Service.Stock.UpdateProductStock(&req); err != nil {
+		ctrl.Log.Error("failed to update stock", zap.Error(err))
+		helper.ResponseError(c, "Failed to update stock", err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	helper.ResponseOK(c, nil, "Stock updated successfully", http.StatusOK)
+}
+
+// GetProductStockDetailController godoc
+// @Summary      Get product stock details
+// @Description  Retrieve the stock details of a specific product by stock history ID.
+// @Tags         Stock
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Stock history ID"
+// @Success      200  {object}  utils.ResponseOK{data=utils.StockResponse} "Detail Stock history"
+// @Failure      404  {object}  utils.ErrorResponse "Stock History not found"
+// @Security Authentication
+// @Security UserID
+// @Router       /stock/{id} [get]
 func (ctrl *StockController) GetProductStockDetailController(c *gin.Context) {
 	id := helper.StringToInt(c.Param("id"))
 	stockHistory, err := ctrl.Service.Stock.GetProductStockDetail(id)
@@ -33,6 +81,21 @@ func (ctrl *StockController) GetProductStockDetailController(c *gin.Context) {
 
 	helper.ResponseOK(c, stockHistory, "", http.StatusOK)
 }
+
+// DeleteProductStockController godoc
+// @Summary      Delete stock history
+// @Description  Delete a specific stock history record by its ID.
+// @Tags         Stock
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Stock history ID"
+// @Success      200  {object}  utils.ResponseOK "Delete Success"
+// @Failure      404  {object}  utils.ErrorResponse "Stock history not found"
+// @Failure      500  {object}  utils.ErrorResponse "Internal server error"
+// @Security Authentication
+// @Security UserID
+// @Security UserRole
+// @Router       /stock/{id} [delete]
 func (ctrl *StockController) DeleteProductStockController(c *gin.Context) {
 	id := helper.StringToInt(c.Param("id"))
 

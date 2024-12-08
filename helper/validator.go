@@ -46,6 +46,9 @@ func FormatValidationError(err error) string {
 		"Images_url":          "Each image must be a valid URL",
 		"Stock_gt":            "Stock must be greater than 0",
 		"Price_gt":            "Price must be greater than 0",
+		"Quantity_gt":         "Quantity must be greater than 0",
+		"ProductID_gt":        "ProductID must be greater than 0",
+		"Type_oneof":          "Type must be 'in' or 'out'",
 	}
 
 	var errMessages []string

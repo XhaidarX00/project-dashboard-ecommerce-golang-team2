@@ -25,7 +25,7 @@ func Migrate(db *gorm.DB) error {
 		{"user", models.User{}},
 		{"category", models.Category{}},
 		{"product", models.Product{}},
-		{"stock_history", models.StockHistory{}},
+		{"stock", models.Stock{}},
 		{"banner", models.Banner{}},
 		{"order", models.Order{}},
 		{"order_item", models.OrderItem{}},
