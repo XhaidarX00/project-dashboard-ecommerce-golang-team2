@@ -1,5 +1,33 @@
 basePath: /
 definitions:
+  models.Banner:
+    properties:
+      end_date:
+        example: "2024-03-31"
+        type: string
+      image:
+        example: /images/banner1.png
+        type: string
+      path_page:
+        example: /spring-sale
+        type: string
+      published:
+        example: true
+        type: boolean
+      release_date:
+        example: "2024-03-01"
+        type: string
+      title:
+        example: Spring Sale 2024
+        type: string
+      type:
+        example:
+        - '["seasonal"'
+        - ' "promo"]'
+        items:
+          type: string
+        type: array
+    type: object
   models.ErrorResponse:
     properties:
       message:
@@ -74,7 +102,12 @@ paths:
         "200":
           description: Successfully retrieved banner
           schema:
-            $ref: '#/definitions/models.SuccessResponse'
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Banner'
+              type: object
         "400":
           description: Invalid banner ID
           schema:
@@ -102,7 +135,12 @@ paths:
         "200":
           description: Successfully updated published banner
           schema:
-            $ref: '#/definitions/models.SuccessResponse'
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Banner'
+              type: object
         "400":
           description: Invalid banner ID
           schema:
@@ -140,7 +178,12 @@ paths:
         "200":
           description: Successfully created banner
           schema:
-            $ref: '#/definitions/models.SuccessResponse'
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Banner'
+              type: object
         "400":
           description: Invalid data input
           schema:

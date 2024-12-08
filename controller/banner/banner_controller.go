@@ -33,7 +33,7 @@ func NewBannerController(service service.Service, log *zap.Logger) *BannerContro
 // @Param title formData string true "Banner Title"
 // @Param description formData string false "Banner Description"
 // @Param image_path formData file true "Banner Image"
-// @Success 200 {object} models.SuccessResponse "Successfully created banner"
+// @Success 200 {object} models.SuccessResponse{data=models.Banner} "Successfully created banner"
 // @Failure 400 {object} models.ErrorResponse "Invalid data input"
 // @Failure 500 {object} models.ErrorResponse "Failed to upload image or create banner"
 // @Router /api/create-banner [post]
@@ -83,7 +83,7 @@ func (ctrl *BannerController) CreateBannerController(c *gin.Context) {
 // @Accept multipart/form-data
 // @Produce json
 // @Param id formData int true "Banner ID"
-// @Success 200 {object} models.SuccessResponse "Successfully updated published banner"
+// @Success 200 {object} models.SuccessResponse{data=models.Banner} "Successfully updated published banner"
 // @Failure 400 {object} models.ErrorResponse "Invalid banner ID"
 // @Failure 500 {object} models.ErrorResponse "Failed to update banner"
 // @Router /api/banner [put]
@@ -122,7 +122,7 @@ func (ctrl *BannerController) UpdateBannerController(c *gin.Context) {
 // @Accept multipart/form-data
 // @Produce json
 // @Param id formData int true "Banner ID"
-// @Success 200 {object} models.SuccessResponse "Successfully retrieved banner"
+// @Success 200 {object} models.SuccessResponse{data=models.Banner} "Successfully retrieved banner"
 // @Failure 400 {object} models.ErrorResponse "Invalid banner ID"
 // @Failure 500 {object} models.ErrorResponse "Failed to retrieve banner"
 // @Router /api/banner [get]

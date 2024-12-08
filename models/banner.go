@@ -29,7 +29,7 @@ type Banner struct {
 	ID          int             `json:"id" form:"id" gorm:"primaryKey;autoIncrement" swaggerignore:"true"`
 	Image       string          `json:"image" form:"image" gorm:"size:255;not null" binding:"omitempty" example:"/images/banner1.png"`
 	Title       string          `json:"title" form:"title" gorm:"size:255;not null" binding:"omitempty" example:"Spring Sale 2024"`
-	Type        JSONB           `json:"type" form:"type" gorm:"type:jsonb;default:'[]'" binding:"omitempty" example:"[\"seasonal\", \"promo\"]"`
+	Type        JSONB           `json:"type" form:"type" gorm:"type:jsonb;default:'[]'" binding:"omitempty" swaggertype:"array,string" example:"[\"seasonal\", \"promo\"]"`
 	PathPage    string          `json:"path_page" form:"path_page" gorm:"size:255;not null" binding:"omitempty" example:"/spring-sale"`
 	ReleaseDate *time.Time      `json:"release_date" form:"release_date" gorm:"type:date" binding:"omitempty" example:"2024-03-01"`
 	EndDate     *time.Time      `json:"end_date" form:"end_date" gorm:"type:date" binding:"omitempty" example:"2024-03-31"`

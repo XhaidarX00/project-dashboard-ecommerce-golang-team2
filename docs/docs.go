@@ -51,7 +51,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully retrieved banner",
                         "schema": {
-                            "$ref": "#/definitions/models.SuccessResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Banner"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -93,7 +105,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully updated published banner",
                         "schema": {
-                            "$ref": "#/definitions/models.SuccessResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Banner"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -192,7 +216,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully created banner",
                         "schema": {
-                            "$ref": "#/definitions/models.SuccessResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Banner"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -212,6 +248,45 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.Banner": {
+            "type": "object",
+            "properties": {
+                "end_date": {
+                    "type": "string",
+                    "example": "2024-03-31"
+                },
+                "image": {
+                    "type": "string",
+                    "example": "/images/banner1.png"
+                },
+                "path_page": {
+                    "type": "string",
+                    "example": "/spring-sale"
+                },
+                "published": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "release_date": {
+                    "type": "string",
+                    "example": "2024-03-01"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Spring Sale 2024"
+                },
+                "type": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"seasonal\"",
+                        " \"promo\"]"
+                    ]
+                }
+            }
+        },
         "models.ErrorResponse": {
             "type": "object",
             "properties": {
