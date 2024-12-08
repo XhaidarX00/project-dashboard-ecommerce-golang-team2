@@ -2,6 +2,7 @@ package userrepository
 
 import (
 	"dashboard-ecommerce-team2/models"
+	"time"
 
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -46,7 +47,11 @@ func (u *userRepository) UpdatePassword(resetPasswordInput models.LoginRequest) 
 
 func (u *userRepository) CountCustomer() (int, error) {
 	var count int64
-	err := u.DB.Model(&models.User{}).Where("role =?", "customer").Count(&count).Error
+	err := u.DB.Model(&models.User{}).
+		Where("role = ?", "customer").
+		Where("EXTRACT(MONTH FROM created_at) = ? AND EXTRACT(YEAR FROM created_at) = ?", time.Now().Month(), time.Now().Year()).
+		Count(&count).Error
+
 	return int(count), err
 }
 
