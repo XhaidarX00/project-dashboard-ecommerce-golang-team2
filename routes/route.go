@@ -14,10 +14,10 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	// authMiddleware := ctx.Middleware.Authentication()
+	authMiddleware := ctx.Middleware.Authentication()
 	adminMiddleware := ctx.Middleware.RoleAuthorization("admin")
 
-	productRoutes := r.Group("/products")
+	productRoutes := r.Group("/products", authMiddleware)
 	{
 		productRoutes.POST("/", ctx.Ctl.Product.CreateProductController)
 		productRoutes.GET("/", ctx.Ctl.Product.GetAllProductsController)
