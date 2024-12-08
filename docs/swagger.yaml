@@ -215,6 +215,23 @@ definitions:
     - name
     - password
     type: object
+  models.StockRequest:
+    properties:
+      product_id:
+        type: integer
+      quantity:
+        minimum: 1
+        type: integer
+      type:
+        enum:
+        - in
+        - out
+        type: string
+    required:
+    - product_id
+    - quantity
+    - type
+    type: object
   models.SuccessResponse:
     properties:
       data: {}
@@ -249,6 +266,24 @@ definitions:
       data: {}
       message:
         type: string
+    type: object
+  utils.StockResponse:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      product_id:
+        type: integer
+      product_name:
+        type: string
+      product_stock:
+        type: integer
+      updated_at:
+        type: string
+      variant: {}
     type: object
 host: localhost:8080
 info:
@@ -1159,6 +1194,105 @@ paths:
       summary: Update a product by ID
       tags:
       - Product
+  /stock:
+    put:
+      consumes:
+      - application/json
+      description: Update the stock of a product (increase or decrease).
+      parameters:
+      - description: Stock update request
+        in: body
+        name: stock_request
+        required: true
+        schema:
+          $ref: '#/definitions/models.StockRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Update success
+          schema:
+            $ref: '#/definitions/utils.ResponseOK'
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - Authentication: []
+      - UserID: []
+      summary: Update product stock
+      tags:
+      - Stock
+  /stock/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a specific stock history record by its ID.
+      parameters:
+      - description: Stock history ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Delete Success
+          schema:
+            $ref: '#/definitions/utils.ResponseOK'
+        "404":
+          description: Stock history not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - Authentication: []
+      - UserID: []
+      - UserRole: []
+      summary: Delete stock history
+      tags:
+      - Stock
+    get:
+      consumes:
+      - application/json
+      description: Retrieve the stock details of a specific product by stock history
+        ID.
+      parameters:
+      - description: Stock history ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Detail Stock history
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ResponseOK'
+            - properties:
+                data:
+                  $ref: '#/definitions/utils.StockResponse'
+              type: object
+        "404":
+          description: Stock History not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - Authentication: []
+      - UserID: []
+      summary: Get product stock details
+      tags:
+      - Stock
 securityDefinitions:
   Authentication:
     in: header

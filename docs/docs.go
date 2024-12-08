@@ -1436,6 +1436,171 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/stock": {
+            "put": {
+                "security": [
+                    {
+                        "Authentication": []
+                    },
+                    {
+                        "UserID": []
+                    }
+                ],
+                "description": "Update the stock of a product (increase or decrease).",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Stock"
+                ],
+                "summary": "Update product stock",
+                "parameters": [
+                    {
+                        "description": "Stock update request",
+                        "name": "stock_request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.StockRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Update success",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseOK"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/stock/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Authentication": []
+                    },
+                    {
+                        "UserID": []
+                    }
+                ],
+                "description": "Retrieve the stock details of a specific product by stock history ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Stock"
+                ],
+                "summary": "Get product stock details",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Stock history ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail Stock history",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.ResponseOK"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/utils.StockResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Stock History not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Authentication": []
+                    },
+                    {
+                        "UserID": []
+                    },
+                    {
+                        "UserRole": []
+                    }
+                ],
+                "description": "Delete a specific stock history record by its ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Stock"
+                ],
+                "summary": "Delete stock history",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Stock history ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Delete Success",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ResponseOK"
+                        }
+                    },
+                    "404": {
+                        "description": "Stock history not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1741,6 +1906,30 @@ const docTemplate = `{
                 }
             }
         },
+        "models.StockRequest": {
+            "type": "object",
+            "required": [
+                "product_id",
+                "quantity",
+                "type"
+            ],
+            "properties": {
+                "product_id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "in",
+                        "out"
+                    ]
+                }
+            }
+        },
         "models.SuccessResponse": {
             "type": "object",
             "properties": {
@@ -1792,6 +1981,33 @@ const docTemplate = `{
                 "message": {
                     "type": "string"
                 }
+            }
+        },
+        "utils.StockResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "product_id": {
+                    "type": "integer"
+                },
+                "product_name": {
+                    "type": "string"
+                },
+                "product_stock": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "variant": {}
             }
         }
     },

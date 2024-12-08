@@ -72,12 +72,38 @@ func (v *Product) BeforeSave(tx *gorm.DB) (err error) {
 	return nil
 }
 
-type StockHistory struct {
+type Stock struct {
 	ID        uint      `gorm:"primaryKey" json:"id"`
-	ProductID uint      `gorm:"not null" json:"product_id"`
+	ProductID uint      `gorm:"not null" json:"product_id" binding:"required,gt=0"`
 	Type      string    `gorm:"size:10;check:type IN ('in','out')" json:"type"`
+	Quantity  int       `json:"quantity" binding:"required,gt=0"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+}
+
+func (v *Stock) BeforeSave(tx *gorm.DB) (err error) {
+	v.CreatedAt = time.Now()
+	v.UpdatedAt = time.Now()
+	return nil
+}
+
+type StockRequest struct {
+	ProductID uint      `json:"product_id" binding:"required,gt=0"`
+	Type      string    `json:"type" binding:"required,oneof=in out"`
+	Quantity  int       `json:"quantity" binding:"required,min=1"`
+	CreatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"-"`
+}
+
+type StockResponse struct {
+	ID           uint            `json:"id"`
+	ProductID    uint            `json:"product_id"`
+	Type         string          `json:"description"`
+	Quantity     int             `json:"quantity"`
+	ProductName  string          `json:"product_name"`
+	Variant      json.RawMessage `json:"variant"`
+	CreatedAt    time.Time       `json:"created_at"`
+	UpdatedAt    time.Time       `json:"updated_at"`
 }
 
 type BestProduct struct {
@@ -139,6 +165,27 @@ func ProductSeed() []Product {
 	}
 }
 
-func StockHistorySeed() []StockHistory {
-	return []StockHistory{}
+func StockSeed() []Stock {
+	return []Stock{
+		{
+			ProductID: 1,
+			Type:      "in",
+			Quantity:  10,
+		},
+		{
+			ProductID: 2,
+			Type:      "in",
+			Quantity:  10,
+		},
+		{
+			ProductID: 3,
+			Type:      "out",
+			Quantity:  10,
+		},
+		{
+			ProductID: 4,
+			Type:      "in",
+			Quantity:  10,
+		},
+	}
 }
