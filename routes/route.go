@@ -32,22 +32,22 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 		stockRoutes.PUT("/", ctx.Ctl.Stock.UpdateProductStockController)
 	}
 
-	orderRoutes := r.Group("/orders")
+	orderRoutes := r.Group("/orders", authMiddleware)
 	{
 		orderRoutes.GET("/", ctx.Ctl.Order.GetAllOrdersController)
 		orderRoutes.GET("/:id", ctx.Ctl.Order.GetOrderByIDController)
 		orderRoutes.PUT("/update/:id", ctx.Ctl.Order.UpdateOrderStatusController)
-		orderRoutes.DELETE("/:id", ctx.Ctl.Order.DeleteOrderController)
+		orderRoutes.DELETE("/:id", adminMiddleware, ctx.Ctl.Order.DeleteOrderController)
 		orderRoutes.GET("/detail/:id", ctx.Ctl.Order.GetOrderDetailController)
 	}
 
-	categoryRoutes := r.Group("/category")
+	categoryRoutes := r.Group("/category", adminMiddleware)
 	{
 		categoryRoutes.POST("/create", ctx.Ctl.Category.CreateCatergoryController)
 		categoryRoutes.GET("/list", ctx.Ctl.Category.GetAllCategoriesController)
 		categoryRoutes.GET("/:id", ctx.Ctl.Category.GetCategoryByIDController)
 		categoryRoutes.PUT("/update/:id", ctx.Ctl.Category.UpdateCategoryController)
-		categoryRoutes.DELETE("/:id", ctx.Ctl.Category.DeleteCategoryController)
+		categoryRoutes.DELETE("/:id", adminMiddleware, ctx.Ctl.Category.DeleteCategoryController)
 	}
 
 	authRoutes(r, ctx)
