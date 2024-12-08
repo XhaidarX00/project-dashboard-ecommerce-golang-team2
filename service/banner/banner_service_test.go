@@ -1,96 +1,103 @@
-package bannerservice
+package bannerservice_test
 
 import (
-	"dashboard-ecommerce-team2/mocks"
+	"dashboard-ecommerce-team2/helper"
+	"dashboard-ecommerce-team2/infra"
 	"dashboard-ecommerce-team2/models"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
-	"go.uber.org/zap"
 )
 
-func NewBannerServiceMock(repo *mocks.BannerRepositoryMock, log *zap.Logger) *mocks.Service {
-	return &mocks.Service{
-		Repo:   repo,
-		Logger: log,
+func TestBannerService(t *testing.T) {
+	ctx, err := infra.NewServiceContext()
+	if err != nil {
+		t.Fatalf("Database Error %s\n", err.Error())
 	}
-}
+	// ctx := infra.MockTest
 
-// Create a new BannerService with the mock repository
-func createMockService() (*mocks.Service, *mocks.BannerRepositoryMock) {
-	mockRepo := new(mocks.BannerRepositoryMock)
-	mockLogger := zap.NewNop()
-	service := NewBannerServiceMock(mockRepo, mockLogger)
-	return service, mockRepo
-}
+	t.Run("Create Banner - Success", func(t *testing.T) {
+		banner := &models.Banner{
+			Image:       "/url/example/image.jpg",
+			Title:       "Test Banner",
+			Type:        models.JSONB{"promo"},
+			PathPage:    "/test-page",
+			ReleaseDate: helper.PointerToTime(time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC)),
+			EndDate:     helper.PointerToTime(time.Date(2024, 1, 31, 0, 0, 0, 0, time.UTC)),
+			Published:   true,
+		}
 
-// Unit tests for BannerService
+		err := ctx.Ctl.Banner.Service.Banner.CreateBanner(banner)
+		assert.Nil(t, err, "Expected no error during banner creation")
+	})
 
-func TestCreateBanner(t *testing.T) {
-	service, mockRepo := createMockService()
-	banner := &models.Banner{
-		ID:    1,
-		Title: "New Banner",
-	}
+	t.Run("Create Banner - Failure", func(t *testing.T) {
+		banner := &models.Banner{} // Missing required fields
+		err := ctx.Ctl.Banner.Service.Banner.CreateBanner(banner)
+		assert.NotNil(t, err, "Expected error due to missing fields")
+		assert.EqualError(t, err, "invalid image url")
+	})
 
-	// Setting up the mock expectation
-	mockRepo.On("Create", banner).Return(nil)
+	t.Run("Get Banner by ID - Success", func(t *testing.T) {
+		banner := &models.Banner{
+			Image:       "/url/example/image.jpg",
+			Title:       "Banner by ID",
+			Type:        models.JSONB{"promo", "sale"},
+			PathPage:    "/promo-page",
+			ReleaseDate: helper.PointerToTime(time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC)),
+			EndDate:     helper.PointerToTime(time.Date(2024, 1, 31, 0, 0, 0, 0, time.UTC)),
+			Published:   true,
+		}
+		ctx.Ctl.Banner.Service.Banner.CreateBanner(banner)
 
-	// Call the service method
-	err := service.Repo.Create(banner)
+		result, err := ctx.Ctl.Banner.Service.Banner.GetBannerByID(banner.ID)
+		assert.Nil(t, err, "Expected no error while retrieving banner")
+		assert.Equal(t, banner.Title, result.Title)
+	})
 
-	// Assertions
-	assert.NoError(t, err)
-	mockRepo.AssertExpectations(t)
-}
+	t.Run("Get Banner by ID - Not Found", func(t *testing.T) {
+		result, err := ctx.Ctl.Banner.Service.Banner.GetBannerByID(9999)
+		assert.Nil(t, result, "Expected no banner found")
+		assert.NotNil(t, err, "Expected error for non-existent banner ID")
+		assert.Contains(t, err.Error(), "not found")
+	})
 
-func TestUpdateBanner(t *testing.T) {
-	service, mockRepo := createMockService()
-	banner := models.Banner{
-		ID:    1,
-		Title: "Updated Banner",
-	}
+	t.Run("Update Banner - Success", func(t *testing.T) {
+		banner := &models.Banner{
+			Image:       "/url/example/image.jpg",
+			Title:       "Update Test Banner",
+			Type:        models.JSONB{"promo"},
+			PathPage:    "/update-page",
+			ReleaseDate: helper.PointerToTime(time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC)),
+			Published:   false,
+		}
+		ctx.Ctl.Banner.Service.Banner.CreateBanner(banner)
 
-	// Setting up the mock expectation
-	mockRepo.On("Update", banner).Return(nil)
+		banner.Title = "Updated Title"
+		err := ctx.Ctl.Banner.Service.Banner.UpdateBanner(banner)
+		assert.Nil(t, err, "Expected no error during banner update")
 
-	// Call the service method
-	err := service.Repo.Update(banner)
+		updatedBanner, _ := ctx.Ctl.Banner.Service.Banner.GetBannerByID(banner.ID)
+		assert.Equal(t, banner.Published, updatedBanner.Published)
+	})
 
-	// Assertions
-	assert.NoError(t, err)
-	mockRepo.AssertExpectations(t)
-}
+	t.Run("Delete Banner - Success", func(t *testing.T) {
+		banner := &models.Banner{
+			Image:     "/url/example/image.jpg",
+			Title:     "Delete Test Banner",
+			Type:      models.JSONB{"promo"},
+			PathPage:  "/delete-page",
+			EndDate:   helper.PointerToTime(time.Date(2024, 1, 31, 0, 0, 0, 0, time.UTC)),
+			Published: true,
+		}
+		ctx.Ctl.Banner.Service.Banner.CreateBanner(banner)
 
-func TestGetBannerByID(t *testing.T) {
-	service, mockRepo := createMockService()
-	banner := &models.Banner{
-		ID:    1,
-		Title: "Banner",
-	}
+		err := ctx.Ctl.Banner.Service.Banner.DeleteBanner(banner.ID)
+		assert.Nil(t, err, "Expected no error during banner deletion")
 
-	// Setting up the mock expectation
-	mockRepo.On("GetByID", 1).Return(banner, nil)
-
-	// Call the service method
-	result, err := service.Repo.GetByID(1)
-
-	// Assertions
-	assert.NoError(t, err)
-	assert.Equal(t, banner, result)
-	mockRepo.AssertExpectations(t)
-}
-
-func TestDeleteBanner(t *testing.T) {
-	service, mockRepo := createMockService()
-
-	// Setting up the mock expectation
-	mockRepo.On("Delete", 1).Return(nil)
-
-	// Call the service method
-	err := service.Repo.Delete(1)
-
-	// Assertions
-	assert.NoError(t, err)
-	mockRepo.AssertExpectations(t)
+		_, err = ctx.Ctl.Banner.Service.Banner.GetBannerByID(banner.ID)
+		assert.NotNil(t, err, "Expected error for deleted banner ID")
+		assert.Contains(t, err.Error(), "not found")
+	})
 }

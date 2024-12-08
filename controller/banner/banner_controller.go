@@ -95,16 +95,19 @@ func (ctrl *BannerController) UpdateBannerController(c *gin.Context) {
 		return
 	}
 
-	banner, err := ctrl.Service.Banner.GetBannerByID(idInt)
-	if err != nil {
-		helper.ResponseError(c, "FAILED", err.Error(), http.StatusInternalServerError)
-		c.Abort()
-		return
-	}
+	// banner, err := ctrl.Service.Banner.GetBannerByID(idInt)
+	// if err != nil {
+	// 	helper.ResponseError(c, "FAILED", err.Error(), http.StatusInternalServerError)
+	// 	c.Abort()
+	// 	return
+	// }
 
 	// change status publish
-	banner.Published = !banner.Published
-	err = ctrl.Service.Banner.UpdateBanner(*banner)
+	// banner.Published = !banner.Published
+
+	var banner models.Banner
+	banner.ID = idInt
+	err = ctrl.Service.Banner.UpdateBanner(&banner)
 	if err != nil {
 		helper.ResponseError(c, "FAILED", err.Error(), http.StatusInternalServerError)
 		c.Abort()

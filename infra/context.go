@@ -20,7 +20,10 @@ type ServiceContext struct {
 	Log        *zap.Logger
 	Cacher     database.Cacher
 	Middleware middleware.Middleware
+	Repo       *repository.Repository
 }
+
+var MockTest *ServiceContext
 
 func NewServiceContext() (*ServiceContext, error) {
 
@@ -59,5 +62,7 @@ func NewServiceContext() (*ServiceContext, error) {
 	// instance controller
 	Ctl := controller.NewController(service, log, rdb, config)
 
-	return &ServiceContext{Cfg: config, DB: db, Ctl: *Ctl, Log: log, Cacher: rdb, Middleware: middleware}, nil
+	MockTest = &ServiceContext{Cfg: config, DB: db, Ctl: *Ctl, Log: log, Cacher: rdb, Middleware: middleware, Repo: &repository}
+
+	return &ServiceContext{Cfg: config, DB: db, Ctl: *Ctl, Log: log, Cacher: rdb, Middleware: middleware, Repo: &repository}, nil
 }

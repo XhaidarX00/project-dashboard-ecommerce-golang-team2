@@ -9,7 +9,7 @@ import (
 
 type BannerService interface {
 	CreateBanner(bannerInput *models.Banner) error
-	UpdateBanner(bannerInput models.Banner) error
+	UpdateBanner(bannerInput *models.Banner) error
 	GetBannerByID(id int) (*models.Banner, error)
 	DeleteBanner(id int) error
 }
@@ -35,7 +35,7 @@ func (b *bannerService) GetBannerByID(id int) (*models.Banner, error) {
 }
 
 // UpdateBanner implements BannerService.
-func (b *bannerService) UpdateBanner(bannerInput models.Banner) error {
+func (b *bannerService) UpdateBanner(bannerInput *models.Banner) error {
 	return b.Repo.Banner.Update(bannerInput)
 }
 
