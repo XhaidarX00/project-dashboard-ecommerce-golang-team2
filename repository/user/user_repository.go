@@ -44,7 +44,6 @@ func (u *userRepository) UpdatePassword(resetPasswordInput models.LoginRequest) 
 }
 
 // CountCustomer implements UserRepository.
-
 func (u *userRepository) CountCustomer() (int, error) {
 	var count int64
 	err := u.DB.Model(&models.User{}).

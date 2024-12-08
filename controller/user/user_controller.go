@@ -150,5 +150,4 @@ func (ctrl *UserController) ResetUserPasswordController(c *gin.Context) {
 		return
 	}
 	helper.ResponseOK(c, nil, "User password reset successfully", http.StatusOK)
-
 }
