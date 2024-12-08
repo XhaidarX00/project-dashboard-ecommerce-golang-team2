@@ -10,6 +10,8 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	 _"dashboard-ecommerce-team2/docs"
 )
 
 // @title Dashboard Ecommerce Team 2
@@ -29,6 +31,9 @@ import (
 // @securityDefinitions.apikey UserID
 // @in header
 // @name User-ID
+// @securityDefinitions.apikey UserRole
+// @in header
+// @name User-Role
 
 func main() {
 	ctx, err := infra.NewServiceContext()

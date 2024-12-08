@@ -1,0 +1,354 @@
+basePath: /
+definitions:
+  models.Product:
+    properties:
+      category_id:
+        example: 1
+        type: integer
+      code_product:
+        example: SPH-001
+        type: string
+      description:
+        example: Latest smartphone with advanced features
+        type: string
+      name:
+        example: Smartphone
+        minLength: 3
+        type: string
+      price:
+        example: 699.99
+        type: number
+      published:
+        example: true
+        type: boolean
+      stock:
+        example: 50
+        type: integer
+    required:
+    - category_id
+    - code_product
+    - name
+    - price
+    - stock
+    type: object
+  models.ProductWithCategory:
+    properties:
+      category_name:
+        type: string
+      code_product:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      images:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      price:
+        type: number
+      published:
+        type: boolean
+      stock:
+        type: integer
+    type: object
+  utils.ErrorResponse:
+    properties:
+      error_msg:
+        type: string
+      message:
+        type: string
+    type: object
+  utils.PaginationResponse:
+    properties:
+      data: {}
+      limit:
+        type: integer
+      message:
+        type: string
+      page:
+        type: integer
+      total_items:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  utils.ResponseOK:
+    properties:
+      data: {}
+      message:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+    url: http://example.com/support
+  description: API for managing Ecommerce
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://example.com/terms/
+  title: Dashboard Ecommerce Team 2
+  version: "1.0"
+paths:
+  /products:
+    get:
+      consumes:
+      - application/json
+      description: Get a paginated list of all products
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of products
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.PaginationResponse'
+            - properties:
+                Data:
+                  items:
+                    $ref: '#/definitions/models.ProductWithCategory'
+                  type: array
+              type: object
+        "500":
+          description: Failed to fetch products
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - Authentication: []
+      - UserID: []
+      summary: Get all products with pagination
+      tags:
+      - Product
+    post:
+      consumes:
+      - application/json
+      description: Create a new product with an image
+      parameters:
+      - description: Category ID
+        in: formData
+        name: category_id
+        required: true
+        type: string
+      - description: Product Name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: Code Product
+        in: formData
+        name: code_product
+        required: true
+        type: string
+      - description: Description Product
+        in: formData
+        name: description
+        required: true
+        type: string
+      - description: Product Price
+        in: formData
+        name: price
+        required: true
+        type: number
+      - description: Product Stock
+        in: formData
+        name: stock
+        required: true
+        type: integer
+      - description: Product Image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Product created successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ResponseOK'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Product'
+              type: object
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - Authentication: []
+      - UserID: []
+      summary: Creates a new product
+      tags:
+      - Product
+  /products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a product by its ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product deleted successfully
+          schema:
+            $ref: '#/definitions/utils.ResponseOK'
+        "404":
+          description: Product not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - Authentication: []
+      - UserID: []
+      - UserRole: []
+      summary: Delete a product by ID
+      tags:
+      - Product
+    get:
+      consumes:
+      - application/json
+      description: Get a specific product by its ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product details
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ResponseOK'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Product'
+              type: object
+        "404":
+          description: Product not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - Authentication: []
+      - UserID: []
+      summary: Get product by ID
+      tags:
+      - Product
+    put:
+      consumes:
+      - application/json
+      description: Update an existing product by its ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Category ID
+        in: formData
+        name: category_id
+        type: string
+      - description: Product Name
+        in: formData
+        name: name
+        type: string
+      - description: Code Product
+        in: formData
+        name: code_product
+        type: string
+      - description: Description Product
+        in: formData
+        name: description
+        type: string
+      - description: Product Price
+        in: formData
+        name: price
+        type: number
+      - description: Product Stock
+        in: formData
+        name: stock
+        type: integer
+      - description: Product Image
+        in: formData
+        name: image
+        type: file
+      - description: Is Published
+        in: formData
+        name: published
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product updated successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ResponseOK'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Product'
+              type: object
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "404":
+          description: Product not found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - Authentication: []
+      - UserID: []
+      summary: Update a product by ID
+      tags:
+      - Product
+securityDefinitions:
+  Authentication:
+    in: header
+    name: Authorization
+    type: apiKey
+  UserID:
+    in: header
+    name: User-ID
+    type: apiKey
+  UserRole:
+    in: header
+    name: User-Role
+    type: apiKey
+swagger: "2.0"

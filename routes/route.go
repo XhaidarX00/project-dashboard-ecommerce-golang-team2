@@ -9,17 +9,21 @@ import (
 )
 
 func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
-	
+
 	r := gin.Default()
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	router := r.Group("/products")
+	// authMiddleware := ctx.Middleware.Authentication()
+	adminMiddleware := ctx.Middleware.RoleAuthorization("admin")
+
+	productRoutes := r.Group("/products")
 	{
-		router.POST("/", ctx.Ctl.Product.CreateProductController)
-		router.GET("/", ctx.Ctl.Product.GetAllProductsController)
-		router.GET("/:id", ctx.Ctl.Product.GetProductByIDController)
-		router.DELETE("/:id", ctx.Ctl.Product.DeleteProductController)
+		productRoutes.POST("/", ctx.Ctl.Product.CreateProductController)
+		productRoutes.GET("/", ctx.Ctl.Product.GetAllProductsController)
+		productRoutes.GET("/:id", ctx.Ctl.Product.GetProductByIDController)
+		productRoutes.DELETE("/:id", adminMiddleware, ctx.Ctl.Product.DeleteProductController)
+		productRoutes.PUT("/:id", ctx.Ctl.Product.UpdateProductController)
 	}
 
 	return r

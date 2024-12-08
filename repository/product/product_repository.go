@@ -13,7 +13,7 @@ import (
 
 type ProductRepository interface {
 	Create(productInput *models.Product) error
-	Update(productInput models.Product) error
+	Update(id int, productInput models.Product) (*models.Product, error)
 	Delete(id int) error
 	GetByID(id int) (*models.ProductID, error)
 	GetAll(page, pageSize int) ([]*models.ProductWithCategory, int64, error)
@@ -121,6 +121,7 @@ func (p *productRepository) GetByID(id int) (*models.ProductID, error) {
 	err := p.DB.Table("products").
 		Select(`
 			products.id, 
+			products.category_id,
 			categories.name AS category_name, 
 			CASE WHEN categories.variant = '{}' THEN NULL ELSE categories.variant END AS variant,
 			products.name, 
@@ -153,6 +154,17 @@ func (p *productRepository) GetByID(id int) (*models.ProductID, error) {
 }
 
 // Update implements ProductRepository.
-func (p *productRepository) Update(productInput models.Product) error {
-	panic("unimplemented")
+func (p *productRepository) Update(id int, productInput models.Product) (*models.Product, error) {
+	p.Log.Info("Updated product", zap.Any("input", productInput))
+
+	var product models.Product
+    err := p.DB.Model(&models.Product{}).Where("id = ?", id).Updates(productInput).First(&product).Error
+    if err != nil {
+		if err.Error() == "record not found" {
+			return nil, fmt.Errorf("product not found")
+		}
+        p.Log.Error("repository: update failed", zap.Error(err))
+        return nil, err
+    }
+    return &product, nil
 }

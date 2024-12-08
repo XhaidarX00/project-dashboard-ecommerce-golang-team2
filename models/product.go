@@ -1,29 +1,26 @@
 package models
 
 import (
-	// "database/sql/driver"
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
-
-	// "errors"
 	"time"
 
 	"gorm.io/gorm"
 )
 
 type Product struct {
-	ID          int             `json:"id" gorm:"primaryKey" swaggerignore:"true"`
-	CategoryID  int             `json:"category_id" gorm:"not null" binding:"required,gt=0" example:"1"`
-	Name        string          `json:"name" gorm:"size:100;not null" binding:"required,min=3" example:"Smartphone"`
-	CodeProduct string          `json:"code_product" gorm:"size:100;unique;not null" binding:"required" example:"SPH-001"`
-	Images      StringArray     `json:"images" form:"file" gorm:"type:jsonb;default:'[]'" binding:"omitempty,dive,url" example:"[\"/images/smartphone1.png\"]"`
-	Description string          `json:"description" binding:"omitempty" example:"Latest smartphone with advanced features"`
-	Stock       int             `json:"stock" gorm:"not null" binding:"required,gt=0" example:"50"`
-	Price       float64         `json:"price" gorm:"type:decimal(10,2);not null" binding:"required,gt=0" example:"699.99"`
-	Published   bool            `json:"published" gorm:"type:boolean;default:false" example:"true"`
-	CreatedAt   time.Time       `json:"created_at" gorm:"autoCreateTime" swaggerignore:"true"`
-	UpdatedAt   time.Time       `json:"updated_at" gorm:"autoUpdateTime" swaggerignore:"true"`
+	ID          int         `json:"id" gorm:"primaryKey" swaggerignore:"true"`
+	CategoryID  int         `json:"category_id" form:"category_id" gorm:"not null" binding:"required,gt=0" example:"1"`
+	Name        string      `json:"name" form:"name" gorm:"size:100;not null" binding:"required,min=3" example:"Smartphone"`
+	CodeProduct string      `json:"code_product" form:"code_product" gorm:"size:100;unique;not null" binding:"required" example:"SPH-001"`
+	Images      StringArray `json:"images" form:"file" gorm:"type:jsonb;default:'[]'" binding:"omitempty,dive,url" example:"[\"/images/smartphone1.png\"]" swaggerignore:"true"`
+	Description string      `json:"description" form:"description" binding:"omitempty" example:"Latest smartphone with advanced features"`
+	Stock       int         `json:"stock" form:"stock" gorm:"not null" binding:"required,gt=0" example:"50"`
+	Price       float64     `json:"price" form:"price" gorm:"type:decimal(10,2);not null" binding:"required,gt=0" example:"699.99"`
+	Published   bool        `json:"published" form:"published" gorm:"type:boolean;default:false" example:"true"`
+	CreatedAt   time.Time   `json:"created_at" gorm:"autoCreateTime" swaggerignore:"true"`
+	UpdatedAt   time.Time   `json:"updated_at" gorm:"autoUpdateTime" swaggerignore:"true"`
 }
 type ProductWithCategory struct {
 	ID           int         `json:"id"`
@@ -36,6 +33,7 @@ type ProductWithCategory struct {
 	Price        float64     `json:"price"`
 	Published    bool        `json:"published"`
 }
+
 type ProductID struct {
 	ID           int             `json:"id"`
 	CategoryName string          `json:"category_name"`

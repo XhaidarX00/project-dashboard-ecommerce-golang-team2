@@ -14,7 +14,7 @@ type ProductService interface {
 	CreateProduct(product *models.Product, filePath string) (*models.Product, error)
 	GetAllProducts(page, pageSize int) ([]*models.ProductWithCategory, int, error)
 	GetProductByID(id int) (*models.ProductID, error)
-	UpdateProduct(productInput models.Product) error
+	UpdateProduct(id int, product models.Product, filePath string) (*models.Product, error)
 	DeleteProduct(id int) error
 }
 
@@ -75,8 +75,24 @@ func (p *productService) GetProductByID(id int) (*models.ProductID, error) {
 }
 
 // UpdateProduct implements ProductService.
-func (p *productService) UpdateProduct(productInput models.Product) error {
-	panic("unimplemented")
+func (p *productService) UpdateProduct(id int, product models.Product, filePath string) (*models.Product, error) {
+	if filePath != "" {
+        cdnURL, err := utils.UploadToCDN(filePath)
+        if err != nil {
+            p.Log.Error("service: upload failed", zap.Error(err))
+            return nil, err
+        }
+        product.Images = []string{cdnURL}
+    }
+
+    updatedProduct, err := p.Repo.Product.Update(id, product)
+    if err != nil {
+        p.Log.Error("service: update failed", zap.Error(err))
+        return nil, err
+    }
+
+    os.Remove(filePath) 
+    return updatedProduct, nil
 }
 
 func NewProductService(repo repository.Repository, log *zap.Logger) ProductService {
