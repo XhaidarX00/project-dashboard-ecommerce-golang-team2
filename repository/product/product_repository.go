@@ -2,12 +2,9 @@ package productrepository
 
 import (
 	"dashboard-ecommerce-team2/models"
-	"time"
-
 	"encoding/json"
 	"fmt"
-
-	// "encoding/json"
+	"time"
 
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -200,6 +197,17 @@ func (p *productRepository) GetByID(id int) (*models.ProductID, error) {
 }
 
 // Update implements ProductRepository.
-func (p *productRepository) Update(productInput models.Product) error {
-	panic("unimplemented")
+func (p *productRepository) Update(id int, productInput models.Product) (*models.Product, error) {
+	p.Log.Info("Updated product", zap.Any("input", productInput))
+
+	var product models.Product
+	err := p.DB.Model(&models.Product{}).Where("id = ?", id).Updates(productInput).First(&product).Error
+	if err != nil {
+		if err.Error() == "record not found" {
+			return nil, fmt.Errorf("product not found")
+		}
+		p.Log.Error("repository: update failed", zap.Error(err))
+		return nil, err
+	}
+	return &product, nil
 }

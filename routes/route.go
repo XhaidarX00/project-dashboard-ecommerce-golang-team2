@@ -21,8 +21,6 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 	{
 		productRoutes.POST("/", ctx.Ctl.Product.CreateProductController)
 		productRoutes.GET("/", ctx.Ctl.Product.GetAllProductsController)
-		productRoutes.POST("/", ctx.Ctl.Product.CreateProductController)
-		productRoutes.GET("/", ctx.Ctl.Product.GetAllProductsController)
 		productRoutes.GET("/:id", ctx.Ctl.Product.GetProductByIDController)
 		productRoutes.DELETE("/:id", adminMiddleware, ctx.Ctl.Product.DeleteProductController)
 		productRoutes.PUT("/:id", ctx.Ctl.Product.UpdateProductController)
@@ -55,7 +53,7 @@ func bannerRoutes(r *gin.Engine, ctx infra.ServiceContext) {
 func promotionRoutes(r *gin.Engine, ctx infra.ServiceContext) {
 	promotion := r.Group("/api")
 	promotion.GET("/promotion", ctx.Ctl.Promotion.GetAllPromotionsController)
-	// promotion.GET("/promotion:id", ctx.Ctl.Promotion.GetByIdPromotionsController)
+	promotion.GET("/promotion:id", ctx.Ctl.Promotion.GetByIdPromotionsController)
 	promotion.PUT("/promotion", ctx.Ctl.Promotion.UpdatePromotionController)
 	promotion.POST("/create-promotion", ctx.Ctl.Promotion.CreatePromotionController)
 	promotion.DELETE("/promotion", ctx.Middleware.RoleAuthorization("admin"), ctx.Ctl.Promotion.DeletePromotionController)
