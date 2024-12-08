@@ -3,13 +3,14 @@ package stockservice
 import (
 	"dashboard-ecommerce-team2/models"
 	"dashboard-ecommerce-team2/repository"
+	"fmt"
 
 	"go.uber.org/zap"
 )
 
 type StockService interface {
 	UpdateProductStock(newStock int) error
-	GetProductStockDetail() (*models.StockHistory, error)
+	GetProductStockDetail(id int) (*models.StockHistoryResponse, error)
 	DeleteProductStock(id int) error
 }
 
@@ -24,8 +25,12 @@ func (s *stockService) DeleteProductStock(id int) error {
 }
 
 // GetProductStockDetail implements StockService.
-func (s *stockService) GetProductStockDetail() (*models.StockHistory, error) {
-	panic("unimplemented")
+func (s *stockService) GetProductStockDetail(id int) (*models.StockHistoryResponse, error) {
+	stockHistory, err := s.Repo.Stock.GetByID(id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get history: %w", err)
+	}
+	return stockHistory, nil
 }
 
 // UpdateProductStock implements StockService.

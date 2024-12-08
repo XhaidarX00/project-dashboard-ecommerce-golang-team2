@@ -80,6 +80,24 @@ type StockHistory struct {
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }
 
+func (v *StockHistory) BeforeSave(tx *gorm.DB) (err error) {
+	v.CreatedAt = time.Now()
+	v.UpdatedAt = time.Now()
+
+	return nil
+}
+
+type StockHistoryResponse struct {
+	ID           uint            `json:"id"`
+	ProductID    uint            `json:"product_id"`
+	Type         string          `json:"description"`
+	ProductName  string          `json:"product_name"`
+	ProductStock int             `json:"product_stock"`
+	Variant      json.RawMessage `json:"variant"`
+	CreatedAt    time.Time       `json:"created_at"`
+	UpdatedAt    time.Time       `json:"updated_at"`
+}
+
 type BestProduct struct {
 	ProductID int    `json:"product_id"`
 	Name      string `json:"name"`
@@ -140,5 +158,22 @@ func ProductSeed() []Product {
 }
 
 func StockHistorySeed() []StockHistory {
-	return []StockHistory{}
+	return []StockHistory{
+		{
+			ProductID: 1,
+			Type:      "in",
+		},
+		{
+			ProductID: 2,
+			Type:      "in",
+		},
+		{
+			ProductID: 3,
+			Type:      "out",
+		},
+		{
+			ProductID: 4,
+			Type:      "in",
+		},
+	}
 }

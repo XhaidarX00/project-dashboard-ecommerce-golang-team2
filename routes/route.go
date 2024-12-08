@@ -25,6 +25,12 @@ func NewRoutes(ctx infra.ServiceContext) *gin.Engine {
 		productRoutes.DELETE("/:id", adminMiddleware, ctx.Ctl.Product.DeleteProductController)
 		productRoutes.PUT("/:id", ctx.Ctl.Product.UpdateProductController)
 	}
+	stockRoutes := r.Group("/stock")
+	{
+		stockRoutes.GET("/:id", ctx.Ctl.Stock.GetProductStockDetailController)
+		stockRoutes.DELETE("/:id", adminMiddleware, ctx.Ctl.Product.DeleteProductController)
+		stockRoutes.PUT("/:id", ctx.Ctl.Product.UpdateProductController)
+	}
 
 	orderRoutes := r.Group("/orders")
 	{
