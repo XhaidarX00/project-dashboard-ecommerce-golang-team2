@@ -11,6 +11,8 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	_ "dashboard-ecommerce-team2/docs"
 )
 
 // @title Dashboard Ecommerce Team 2
