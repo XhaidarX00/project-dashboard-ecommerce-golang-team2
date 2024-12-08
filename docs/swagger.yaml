@@ -44,6 +44,8 @@ definitions:
           type: string
         type: array
     type: object
+  models.Category:
+    type: object
   models.CheckEmailRequest:
     properties:
       email:
@@ -624,138 +626,8 @@ paths:
       summary: Update promotion published status
       tags:
       - Promotions
-  /api/v1/orders:
-    get:
-      consumes:
-      - application/json
-      description: Get a list of all orders
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Order'
-            type: array
-      summary: Get all orders
-      tags:
-      - orders
-  /api/v1/orders/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete an order by ID
-      parameters:
-      - description: Order ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully deleted the order
-          schema:
-            $ref: '#/definitions/helper.HTTPResponse'
-        "400":
-          description: Invalid order ID
-          schema:
-            $ref: '#/definitions/helper.HTTPResponse'
-        "500":
-          description: Failed to delete the order
-          schema:
-            $ref: '#/definitions/helper.HTTPResponse'
-      summary: Delete order by ID
-      tags:
-      - orders
-    get:
-      consumes:
-      - application/json
-      description: Get a single order by ID
-      parameters:
-      - description: Order ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Order'
-      summary: Get order by ID
-      tags:
-      - orders
-    put:
-      consumes:
-      - application/json
-      description: Update the status of an order by ID
-      parameters:
-      - description: Order ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Order Status
-        example: '"shipped"'
-        in: body
-        name: status
-        required: true
-        schema:
-          type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully updated the order status
-          schema:
-            $ref: '#/definitions/helper.HTTPResponse'
-        "400":
-          description: Invalid order ID
-          schema:
-            $ref: '#/definitions/helper.HTTPResponse'
-        "500":
-          description: Failed to update order status
-          schema:
-            $ref: '#/definitions/helper.HTTPResponse'
-      summary: Update order status
-      tags:
-      - Orders
-  /api/v1/orders/{id}/details:
-    get:
-      consumes:
-      - application/json
-      description: Get the details of an order by ID
-      parameters:
-      - description: Order ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/helper.HTTPResponse'
-        "400":
-          description: Invalid order ID
-          schema:
-            $ref: '#/definitions/helper.HTTPResponse'
-        "500":
-          description: Failed to fetch order details
-          schema:
-            $ref: '#/definitions/helper.HTTPResponse'
-      summary: Get order detail by ID
-      tags:
-      - orders
   /auth/check-email:
-    get:
+    post:
       consumes:
       - application/json
       description: Verify if a user with the given email already exists in the system
@@ -785,10 +657,10 @@ paths:
       tags:
       - Auth
   /auth/login:
-    get:
+    post:
       consumes:
       - application/json
-      description: Authenticate a user and return a JWT token
+      description: Authenticate a user and return a token
       parameters:
       - description: Login Request Body
         in: body
@@ -874,6 +746,157 @@ paths:
       summary: Reset user password
       tags:
       - Auth
+  /category/:id:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a category by its ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted the category
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Invalid category ID
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Failed to delete category
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      summary: Delete category by ID
+      tags:
+      - Categories
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a category by its ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Category data
+          schema:
+            $ref: '#/definitions/models.Category'
+        "400":
+          description: Invalid category ID
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "404":
+          description: Category not found
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      summary: Get category by ID
+      tags:
+      - Categories
+    put:
+      consumes:
+      - application/json
+      description: Update the details of an existing category by ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated category details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.Category'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated the category
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Invalid category ID or input
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "404":
+          description: Category not found
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Failed to update category
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      summary: Update a category
+      tags:
+      - categories
+  /category/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new category with a name
+      parameters:
+      - description: Category name
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/models.Category'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully created the category
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Failed to create category
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      summary: Create a new category
+      tags:
+      - Categories
+  /category/list:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all categories with pagination
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Number of items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of categories
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      summary: Get all categories
+      tags:
+      - Categories
   /dashboard/best-item-list:
     get:
       description: Retrieve a list of the best-selling products
@@ -951,6 +974,145 @@ paths:
       summary: Get dashboard summary
       tags:
       - Dashboard
+  /orders/:
+    get:
+      consumes:
+      - application/json
+      description: Get a paginated list of orders
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Number of items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      summary: Get all orders with pagination
+      tags:
+      - orders
+  /orders/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an order by ID
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted the order
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Invalid order ID
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Failed to delete the order
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      summary: Delete order by ID
+      tags:
+      - orders
+    get:
+      consumes:
+      - application/json
+      description: Get a single order by ID
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Order'
+      summary: Get order by ID
+      tags:
+      - orders
+    put:
+      consumes:
+      - application/json
+      description: Update the status of an order by ID
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Order Status
+        example: '"shipped"'
+        in: body
+        name: status
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated the order status
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Invalid order ID
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Failed to update order status
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      summary: Update order status
+      tags:
+      - Orders
+  /orders/detail/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get the details of an order by ID
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "400":
+          description: Invalid order ID
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+        "500":
+          description: Failed to fetch order details
+          schema:
+            $ref: '#/definitions/helper.HTTPResponse'
+      summary: Get order detail by ID
+      tags:
+      - orders
   /products:
     get:
       consumes:

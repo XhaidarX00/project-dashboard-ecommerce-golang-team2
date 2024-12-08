@@ -76,8 +76,8 @@ func promotionRoutes(r *gin.Engine, ctx infra.ServiceContext) {
 
 func authRoutes(r *gin.Engine, ctx infra.ServiceContext) {
 	authGroup := r.Group("/auth")
-	authGroup.GET("/login", ctx.Ctl.User.LoginController)
-	authGroup.GET("/check-email", ctx.Ctl.User.CheckEmailUserController)
+	authGroup.POST("/login", ctx.Ctl.User.LoginController)
+	authGroup.POST("/check-email", ctx.Ctl.User.CheckEmailUserController)
 	authGroup.POST("/register", ctx.Ctl.User.CreateUserController)
 	authGroup.PATCH("/reset-password", ctx.Ctl.User.ResetUserPasswordController)
 }

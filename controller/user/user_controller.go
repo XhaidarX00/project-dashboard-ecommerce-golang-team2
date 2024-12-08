@@ -60,7 +60,7 @@ func (ctrl *UserController) CreateUserController(c *gin.Context) {
 
 // LoginController godoc
 // @Summary      User Login
-// @Description  Authenticate a user and return a JWT token
+// @Description  Authenticate a user and return a token
 // @Tags         Auth
 // @Accept       json
 // @Produce      json
@@ -68,7 +68,7 @@ func (ctrl *UserController) CreateUserController(c *gin.Context) {
 // @Success      200           {object} helper.HTTPResponse   "User logged in successfully"
 // @Failure      400           {object} helper.HTTPResponse   "Invalid request body"
 // @Failure      401           {object} helper.HTTPResponse   "Failed to login user"
-// @Router       /auth/login [get]
+// @Router       /auth/login [post]
 func (ctrl *UserController) LoginController(c *gin.Context) {
 	var loginReq models.LoginRequest
 	if err := c.ShouldBindJSON(&loginReq); err != nil {
@@ -106,7 +106,7 @@ func (ctrl *UserController) LoginController(c *gin.Context) {
 // @Success      200    {object} helper.HTTPResponse     "Email check result"
 // @Failure      400    {object} helper.HTTPResponse     "Invalid request body"
 // @Failure      500    {object} helper.HTTPResponse     "Failed to check user email"
-// @Router       /auth/check-email [get]
+// @Router       /auth/check-email [post]
 func (ctrl *UserController) CheckEmailUserController(c *gin.Context) {
 	request := models.CheckEmailRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
