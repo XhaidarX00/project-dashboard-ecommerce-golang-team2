@@ -135,6 +135,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Remove a banner by its ID",
                 "consumes": [
                     "multipart/form-data"
@@ -147,6 +152,13 @@ const docTemplate = `{
                 ],
                 "summary": "Delete a banner",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Role",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "Banner ID",

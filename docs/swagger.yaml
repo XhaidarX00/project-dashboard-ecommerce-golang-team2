@@ -63,6 +63,11 @@ paths:
       - multipart/form-data
       description: Remove a banner by its ID
       parameters:
+      - description: Role
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Banner ID
         in: formData
         name: id
@@ -83,6 +88,8 @@ paths:
           description: Failed to delete banner
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
       summary: Delete a banner
       tags:
       - Banner

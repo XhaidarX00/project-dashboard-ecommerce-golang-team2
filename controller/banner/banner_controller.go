@@ -151,6 +151,8 @@ func (ctrl *BannerController) GetBannerByIDController(c *gin.Context) {
 // @Tags Banner
 // @Accept multipart/form-data
 // @Produce json
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Role"
 // @Param id formData int true "Banner ID"
 // @Success 200 {object} models.SuccessResponse "Successfully deleted banner"
 // @Failure 400 {object} models.ErrorResponse "Invalid banner ID"
